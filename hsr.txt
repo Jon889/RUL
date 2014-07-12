@@ -1,0 +1,55 @@
+#VirtualPieces
+0x57011920,0x57001920
+0x57021920,0x57001920
+0x57031920,0x57001920
+0x57041920,0x57001920
+0x57051920,0x57001920
+0x57061920,0x57001920
+0x57081920,0x57001920
+0x57091920,0x57001920
+0x570819a0,0x57001920
+0x570519a0,0x57001920
+0x5d349000,0x0ddd0400
+#End
+
+#Monorail,HSRP
+0x0d031500,0x5dd31500,S,Orth
+0x0d000500,0x5dd00500,S,Orth Stub
+0x0d001a00,0x5dd01a00,N,Diag
+0x0d000200,0x5dd00200,N,Diag Stub
+0x0d002200,0x5dd14e00,N,Curve Diag Side
+0x0d031600,0x5dd22100,N,Curve Orth Side
+0x0d031700,0x5dd29700,N,Orth switch 1
+0x0d02f900,0x5dd2f900,N,Diag switch 2
+0x0d032500,0x5dde2d00,N,Orth Switch 2
+0x0d001c00,0x5dd31a00,N,Diag Switch 1
+0x0ddd0200,0x5ddd0200,S,Road Orth Overpass
+0x0ddd0100,0x5ddd0100,N,Road Diag Overpass
+0x0ddd0800,0x5ddd0800,S,Street Orth Overpass
+0x0ddd0300,0x5ddd0300,N,Diag Rail Overpass
+0x0ddd0400,0x5ddd0400,S,Orth Rail Overpass
+0x0ddd0500,0x5ddd0500,N,Diag Ave Outer Overpass
+0x0ddd0600,0x5ddd0600,N,Diag Ave Inner Overpass
+0x0ddd0700,0x5ddd0700,N,Orth Ave Overpass
+0x57001920,0x57001925,N,Orth RHW-2 Overpass
+0x57011920,0x57011925,N,Orth RHW-3 Overpass
+0x57021920,0x57021925,N,Orth MIS Overpass
+0x57031920,0x57031925,N,Orth RHW-4 Overpass
+0x57041920,0x57041925,N,Orth RHW-6S Overpass
+0x57051920,0x57051925,N,Orth RHW-8S Overpass
+0x57061920,0x57061925,N,Orth RHW-10S Overpass
+0x570519a0,0x570519a5,N,Orth RHW-8/10S Inner
+0x57081920,0x57081925,N,Orth RHW-6C Overpass
+0x570819a0,0x570819a5,N,Orth RHW-XC Median
+0x57091920,0x57091925,N,Orth RHW-8C Overpass
+0x5d349000,0x5ddd0800,S,Orth STR Overpass TEMP
+0x0a200000,0x5ad00000,S,Orth Maxis Highway Overpass
+0x0ddd0900,0x5ddf1300,N,Orth Avenue Diag Monorail 1
+0x0ddd1000,0x5ddf0c00,N,Orth Street Diag Monorail
+0x0ddd1100,0x5ddf1500,N,Orth Avenue Diag Monorail 2
+0x0ddd1200,0x5ddf2310,N,Diag Avenue Diag Monorail Inner
+0x0ddd1300,0x5ddf2300,N,Diag Avenue Diag Monorail Outer
+0x0ddd1400,0x5ddf1200,N,Orth Rail Diag Monorail
+0x0ddd1500,0x5ddf2000,N,Diag Rail Diag Monorail
+0x0ddd1600,0x5ddf0f00,N,Orth Road Diag Monorail
+0x0ddd1700,0x5ddf1c00,N,Diag Road Diag Monorail

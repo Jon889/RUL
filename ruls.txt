@@ -1,0 +1,350 @@
+;HSRP Orth next to...
+ ;Monorail Orth -> HSRP Orth
+    0x5dd31500,1,0,0x0d031500,1,0=0x5dd31500,1,0,0x5dd31500,1,0
+    0x5dd31500,1,0,0x0d031500,3,0=0x5dd31500,1,0,0x5dd31500,3,0
+    0x5dd31500,3,0,0x0d031500,1,0=0x5dd31500,3,0,0x5dd31500,1,0
+    0x5dd31500,3,0,0x0d031500,3,0=0x5dd31500,3,0,0x5dd31500,3,0
+ ;Monorail Orth Stub -> HSRP Orth Stub
+    0x5dd31500,1,0,0x0d000500,1,0=0x5dd31500,1,0,0x5dd00500,1,0
+    0x5dd31500,3,0,0x0d000500,1,0=0x5dd31500,3,0,0x5dd00500,1,0
+ ;Monorail Diag -> HSRP Diag                             ;Monorail Diag Stub -> HSRP Diag Stub                                       ;Monorail Curve Diag Side -> HSRP Curve Diag Side                                                   ;Monorail Curve Orth Side -> HSRP Curve Orth Side
+    0x5dd31500,1,0,0x0d031600,3,0=0x5dd31500,1,0,0x5dd22100,3,0
+    0x5dd31500,1,0,0x0d031600,1,1=0x5dd31500,1,0,0x5dd22100,1,1
+    0x5dd31500,3,0,0x0d031600,3,0=0x5dd31500,3,0,0x5dd22100,3,0
+    0x5dd31500,3,0,0x0d031600,1,1=0x5dd31500,3,0,0x5dd22100,1,1
+ ;Monorail Orth switch 1 -> HSRP Orth switch 1
+    0x5dd31500,1,0,0x0d031700,3,0=0x5dd31500,1,0,0x5dd29700,3,0
+    0x5dd31500,1,0,0x0d031700,1,1=0x5dd31500,1,0,0x5dd29700,1,1
+    0x5dd31500,3,0,0x0d031700,3,0=0x5dd31500,3,0,0x5dd29700,3,0
+    0x5dd31500,3,0,0x0d031700,1,1=0x5dd31500,3,0,0x5dd29700,1,1
+ ;Monorail Diag switch 2 -> HSRP Diag switch 2
+    0x5dd31500,1,0,0x0d02f900,1,0=0x5dd31500,1,0,0x5dd2f900,1,0
+    0x5dd31500,1,0,0x0d02f900,3,1=0x5dd31500,1,0,0x5dd2f900,3,1
+    0x5dd31500,3,0,0x0d02f900,1,0=0x5dd31500,3,0,0x5dd2f900,1,0
+    0x5dd31500,3,0,0x0d02f900,3,1=0x5dd31500,3,0,0x5dd2f900,3,1
+ ;Monorail Orth Switch 2 -> HSRP Orth Switch 2
+    0x5dd31500,1,0,0x0d032500,3,0=0x5dd31500,1,0,0x5dde2d00,3,0
+    0x5dd31500,1,0,0x0d032500,1,1=0x5dd31500,1,0,0x5dde2d00,1,1
+    0x5dd31500,3,0,0x0d032500,3,0=0x5dd31500,3,0,0x5dde2d00,3,0
+    0x5dd31500,3,0,0x0d032500,1,1=0x5dd31500,3,0,0x5dde2d00,1,1
+ ;Monorail Diag Switch 1 -> HSRP Diag Switch 1                                              
+;HSRP Orth Stub next to...
+ ;Monorail Orth -> HSRP Orth
+    0x5dd00500,3,0,0x0d031500,1,0=0x5dd00500,3,0,0x5dd31500,1,0
+    0x5dd00500,3,0,0x0d031500,3,0=0x5dd00500,3,0,0x5dd31500,3,0
+ ;Monorail Orth Stub -> HSRP Orth Stub
+    0x5dd00500,3,0,0x0d000500,1,0=0x5dd00500,3,0,0x5dd00500,1,0
+ ;Monorail Diag -> HSRP Diag                             ;Monorail Diag Stub -> HSRP Diag Stub                                       ;Monorail Curve Diag Side -> HSRP Curve Diag Side                                                   ;Monorail Curve Orth Side -> HSRP Curve Orth Side
+    0x5dd00500,3,0,0x0d031600,3,0=0x5dd00500,3,0,0x5dd22100,3,0
+    0x5dd00500,3,0,0x0d031600,1,1=0x5dd00500,3,0,0x5dd22100,1,1
+ ;Monorail Orth switch 1 -> HSRP Orth switch 1
+    0x5dd00500,3,0,0x0d031700,3,0=0x5dd00500,3,0,0x5dd29700,3,0
+    0x5dd00500,3,0,0x0d031700,1,1=0x5dd00500,3,0,0x5dd29700,1,1
+ ;Monorail Diag switch 2 -> HSRP Diag switch 2
+    0x5dd00500,3,0,0x0d02f900,1,0=0x5dd00500,3,0,0x5dd2f900,1,0
+    0x5dd00500,3,0,0x0d02f900,3,1=0x5dd00500,3,0,0x5dd2f900,3,1
+ ;Monorail Orth Switch 2 -> HSRP Orth Switch 2
+    0x5dd00500,3,0,0x0d032500,3,0=0x5dd00500,3,0,0x5dde2d00,3,0
+    0x5dd00500,3,0,0x0d032500,1,1=0x5dd00500,3,0,0x5dde2d00,1,1
+ ;Monorail Diag Switch 1 -> HSRP Diag Switch 1                                              
+;HSRP Diag next to...
+ ;Monorail Orth -> HSRP Orth                             ;Monorail Orth Stub -> HSRP Orth Stub                                       ;Monorail Diag -> HSRP Diag
+    0x5dd01a00,0,0,0x0d001a00,2,0=0x5dd01a00,0,0,0x5dd01a00,2,0
+    0x5dd01a00,0,0,0x0d001a00,3,1=0x5dd01a00,0,0,0x5dd01a00,3,1
+    0x5dd01a00,3,0,0x0d001a00,1,0=0x5dd01a00,3,0,0x5dd01a00,1,0
+    0x5dd01a00,3,0,0x0d001a00,0,1=0x5dd01a00,3,0,0x5dd01a00,0,1
+    0x5dd01a00,1,1,0x0d001a00,2,0=0x5dd01a00,1,1,0x5dd01a00,2,0
+    0x5dd01a00,1,1,0x0d001a00,3,1=0x5dd01a00,1,1,0x5dd01a00,3,1
+    0x5dd01a00,2,1,0x0d001a00,1,0=0x5dd01a00,2,1,0x5dd01a00,1,0
+    0x5dd01a00,2,1,0x0d001a00,0,1=0x5dd01a00,2,1,0x5dd01a00,0,1
+ ;Monorail Diag Stub -> HSRP Diag Stub
+    0x5dd01a00,0,0,0x0d000200,1,0=0x5dd01a00,0,0,0x5dd00200,1,0
+    0x5dd01a00,3,0,0x0d000200,3,1=0x5dd01a00,3,0,0x5dd00200,3,1
+    0x5dd01a00,1,1,0x0d000200,1,0=0x5dd01a00,1,1,0x5dd00200,1,0
+    0x5dd01a00,2,1,0x0d000200,3,1=0x5dd01a00,2,1,0x5dd00200,3,1
+ ;Monorail Curve Diag Side -> HSRP Curve Diag Side
+    0x5dd01a00,0,0,0x0d002200,2,0=0x5dd01a00,0,0,0x5dd14e00,2,0
+    0x5dd01a00,3,0,0x0d002200,0,1=0x5dd01a00,3,0,0x5dd14e00,0,1
+    0x5dd01a00,1,1,0x0d002200,2,0=0x5dd01a00,1,1,0x5dd14e00,2,0
+    0x5dd01a00,2,1,0x0d002200,0,1=0x5dd01a00,2,1,0x5dd14e00,0,1
+ ;Monorail Curve Orth Side -> HSRP Curve Orth Side                                                   ;Monorail Orth switch 1 -> HSRP Orth switch 1                                               ;Monorail Diag switch 2 -> HSRP Diag switch 2
+    0x5dd01a00,0,0,0x0d02f900,0,1=0x5dd01a00,0,0,0x5dd2f900,0,1
+    0x5dd01a00,3,0,0x0d02f900,2,0=0x5dd01a00,3,0,0x5dd2f900,2,0
+    0x5dd01a00,1,1,0x0d02f900,0,1=0x5dd01a00,1,1,0x5dd2f900,0,1
+    0x5dd01a00,2,1,0x0d02f900,2,0=0x5dd01a00,2,1,0x5dd2f900,2,0
+ ;Monorail Orth Switch 2 -> HSRP Orth Switch 2
+    0x5dd01a00,0,0,0x0d032500,2,0=0x5dd01a00,0,0,0x5dde2d00,2,0
+    0x5dd01a00,3,0,0x0d032500,0,1=0x5dd01a00,3,0,0x5dde2d00,0,1
+    0x5dd01a00,1,1,0x0d032500,2,0=0x5dd01a00,1,1,0x5dde2d00,2,0
+    0x5dd01a00,2,1,0x0d032500,0,1=0x5dd01a00,2,1,0x5dde2d00,0,1
+ ;Monorail Diag Switch 1 -> HSRP Diag Switch 1
+    0x5dd01a00,0,0,0x0d001c00,2,0=0x5dd01a00,0,0,0x5dd31a00,2,0
+    0x5dd01a00,3,0,0x0d001c00,0,1=0x5dd01a00,3,0,0x5dd31a00,0,1
+    0x5dd01a00,1,1,0x0d001c00,2,0=0x5dd01a00,1,1,0x5dd31a00,2,0
+    0x5dd01a00,2,1,0x0d001c00,0,1=0x5dd01a00,2,1,0x5dd31a00,0,1
+
+;HSRP Diag Stub next to...
+ ;Monorail Orth -> HSRP Orth                             ;Monorail Orth Stub -> HSRP Orth Stub                                       ;Monorail Diag -> HSRP Diag
+    0x5dd00200,3,0,0x0d001a00,2,0=0x5dd00200,3,0,0x5dd01a00,2,0
+    0x5dd00200,3,0,0x0d001a00,3,1=0x5dd00200,3,0,0x5dd01a00,3,1
+    0x5dd00200,1,1,0x0d001a00,1,0=0x5dd00200,1,1,0x5dd01a00,1,0
+    0x5dd00200,1,1,0x0d001a00,0,1=0x5dd00200,1,1,0x5dd01a00,0,1
+ ;Monorail Diag Stub -> HSRP Diag Stub
+    0x5dd00200,3,0,0x0d000200,1,0=0x5dd00200,3,0,0x5dd00200,1,0
+    0x5dd00200,1,1,0x0d000200,3,1=0x5dd00200,1,1,0x5dd00200,3,1
+ ;Monorail Curve Diag Side -> HSRP Curve Diag Side
+    0x5dd00200,3,0,0x0d002200,2,0=0x5dd00200,3,0,0x5dd14e00,2,0
+    0x5dd00200,1,1,0x0d002200,0,1=0x5dd00200,1,1,0x5dd14e00,0,1
+ ;Monorail Curve Orth Side -> HSRP Curve Orth Side                                                   ;Monorail Orth switch 1 -> HSRP Orth switch 1                                               ;Monorail Diag switch 2 -> HSRP Diag switch 2
+    0x5dd00200,3,0,0x0d02f900,0,1=0x5dd00200,3,0,0x5dd2f900,0,1
+    0x5dd00200,1,1,0x0d02f900,2,0=0x5dd00200,1,1,0x5dd2f900,2,0
+ ;Monorail Orth Switch 2 -> HSRP Orth Switch 2
+    0x5dd00200,3,0,0x0d032500,2,0=0x5dd00200,3,0,0x5dde2d00,2,0
+    0x5dd00200,1,1,0x0d032500,0,1=0x5dd00200,1,1,0x5dde2d00,0,1
+ ;Monorail Diag Switch 1 -> HSRP Diag Switch 1
+    0x5dd00200,3,0,0x0d001c00,2,0=0x5dd00200,3,0,0x5dd31a00,2,0
+    0x5dd00200,1,1,0x0d001c00,0,1=0x5dd00200,1,1,0x5dd31a00,0,1
+
+;HSRP Curve Diag Side next to...
+ ;Monorail Orth -> HSRP Orth                             ;Monorail Orth Stub -> HSRP Orth Stub                                       ;Monorail Diag -> HSRP Diag
+    0x5dd14e00,0,0,0x0d001a00,2,0=0x5dd14e00,0,0,0x5dd01a00,2,0
+    0x5dd14e00,0,0,0x0d001a00,3,1=0x5dd14e00,0,0,0x5dd01a00,3,1
+    0x5dd14e00,2,1,0x0d001a00,1,0=0x5dd14e00,2,1,0x5dd01a00,1,0
+    0x5dd14e00,2,1,0x0d001a00,0,1=0x5dd14e00,2,1,0x5dd01a00,0,1
+ ;Monorail Diag Stub -> HSRP Diag Stub
+    0x5dd14e00,0,0,0x0d000200,1,0=0x5dd14e00,0,0,0x5dd00200,1,0
+    0x5dd14e00,2,1,0x0d000200,3,1=0x5dd14e00,2,1,0x5dd00200,3,1
+ ;Monorail Curve Diag Side -> HSRP Curve Diag Side
+    0x5dd14e00,0,0,0x0d002200,2,0=0x5dd14e00,0,0,0x5dd14e00,2,0
+    0x5dd14e00,3,0,0x0d002200,1,0=0x5dd14e00,3,0,0x5dd14e00,1,0
+    0x5dd14e00,3,0,0x0d002200,3,1=0x5dd14e00,3,0,0x5dd14e00,3,1
+    0x5dd14e00,1,1,0x0d002200,1,0=0x5dd14e00,1,1,0x5dd14e00,1,0
+    0x5dd14e00,1,1,0x0d002200,3,1=0x5dd14e00,1,1,0x5dd14e00,3,1
+    0x5dd14e00,2,1,0x0d002200,0,1=0x5dd14e00,2,1,0x5dd14e00,0,1
+ ;Monorail Curve Orth Side -> HSRP Curve Orth Side
+    0x5dd14e00,3,0,0x0d031600,1,0=0x5dd14e00,3,0,0x5dd22100,1,0
+    0x5dd14e00,3,0,0x0d031600,3,1=0x5dd14e00,3,0,0x5dd22100,3,1
+    0x5dd14e00,1,1,0x0d031600,1,0=0x5dd14e00,1,1,0x5dd22100,1,0
+    0x5dd14e00,1,1,0x0d031600,3,1=0x5dd14e00,1,1,0x5dd22100,3,1
+ ;Monorail Orth switch 1 -> HSRP Orth switch 1                                               ;Monorail Diag switch 2 -> HSRP Diag switch 2
+    0x5dd14e00,0,0,0x0d02f900,0,1=0x5dd14e00,0,0,0x5dd2f900,0,1
+    0x5dd14e00,2,1,0x0d02f900,2,0=0x5dd14e00,2,1,0x5dd2f900,2,0
+ ;Monorail Orth Switch 2 -> HSRP Orth Switch 2
+    0x5dd14e00,0,0,0x0d032500,2,0=0x5dd14e00,0,0,0x5dde2d00,2,0
+    0x5dd14e00,2,1,0x0d032500,0,1=0x5dd14e00,2,1,0x5dde2d00,0,1
+ ;Monorail Diag Switch 1 -> HSRP Diag Switch 1
+    0x5dd14e00,0,0,0x0d001c00,2,0=0x5dd14e00,0,0,0x5dd31a00,2,0
+    0x5dd14e00,2,1,0x0d001c00,0,1=0x5dd14e00,2,1,0x5dd31a00,0,1
+
+;HSRP Curve Orth Side next to...
+ ;Monorail Orth -> HSRP Orth
+    0x5dd22100,1,0,0x0d031500,1,0=0x5dd22100,1,0,0x5dd31500,1,0
+    0x5dd22100,1,0,0x0d031500,3,0=0x5dd22100,1,0,0x5dd31500,3,0
+    0x5dd22100,3,1,0x0d031500,1,0=0x5dd22100,3,1,0x5dd31500,1,0
+    0x5dd22100,3,1,0x0d031500,3,0=0x5dd22100,3,1,0x5dd31500,3,0
+ ;Monorail Orth Stub -> HSRP Orth Stub
+    0x5dd22100,1,0,0x0d000500,1,0=0x5dd22100,1,0,0x5dd00500,1,0
+    0x5dd22100,3,1,0x0d000500,1,0=0x5dd22100,3,1,0x5dd00500,1,0
+ ;Monorail Diag -> HSRP Diag                             ;Monorail Diag Stub -> HSRP Diag Stub                                       ;Monorail Curve Diag Side -> HSRP Curve Diag Side
+    0x5dd22100,3,0,0x0d002200,1,0=0x5dd22100,3,0,0x5dd14e00,1,0
+    0x5dd22100,3,0,0x0d002200,3,1=0x5dd22100,3,0,0x5dd14e00,3,1
+    0x5dd22100,1,1,0x0d002200,1,0=0x5dd22100,1,1,0x5dd14e00,1,0
+    0x5dd22100,1,1,0x0d002200,3,1=0x5dd22100,1,1,0x5dd14e00,3,1
+ ;Monorail Curve Orth Side -> HSRP Curve Orth Side
+    0x5dd22100,1,0,0x0d031600,3,0=0x5dd22100,1,0,0x5dd22100,3,0
+    0x5dd22100,1,0,0x0d031600,1,1=0x5dd22100,1,0,0x5dd22100,1,1
+    0x5dd22100,3,0,0x0d031600,1,0=0x5dd22100,3,0,0x5dd22100,1,0
+    0x5dd22100,3,0,0x0d031600,3,1=0x5dd22100,3,0,0x5dd22100,3,1
+    0x5dd22100,1,1,0x0d031600,1,0=0x5dd22100,1,1,0x5dd22100,1,0
+    0x5dd22100,1,1,0x0d031600,3,1=0x5dd22100,1,1,0x5dd22100,3,1
+    0x5dd22100,3,1,0x0d031600,3,0=0x5dd22100,3,1,0x5dd22100,3,0
+    0x5dd22100,3,1,0x0d031600,1,1=0x5dd22100,3,1,0x5dd22100,1,1
+ ;Monorail Orth switch 1 -> HSRP Orth switch 1
+    0x5dd22100,1,0,0x0d031700,3,0=0x5dd22100,1,0,0x5dd29700,3,0
+    0x5dd22100,1,0,0x0d031700,1,1=0x5dd22100,1,0,0x5dd29700,1,1
+    0x5dd22100,3,1,0x0d031700,3,0=0x5dd22100,3,1,0x5dd29700,3,0
+    0x5dd22100,3,1,0x0d031700,1,1=0x5dd22100,3,1,0x5dd29700,1,1
+ ;Monorail Diag switch 2 -> HSRP Diag switch 2
+    0x5dd22100,1,0,0x0d02f900,1,0=0x5dd22100,1,0,0x5dd2f900,1,0
+    0x5dd22100,1,0,0x0d02f900,3,1=0x5dd22100,1,0,0x5dd2f900,3,1
+    0x5dd22100,3,1,0x0d02f900,1,0=0x5dd22100,3,1,0x5dd2f900,1,0
+    0x5dd22100,3,1,0x0d02f900,3,1=0x5dd22100,3,1,0x5dd2f900,3,1
+ ;Monorail Orth Switch 2 -> HSRP Orth Switch 2
+    0x5dd22100,1,0,0x0d032500,3,0=0x5dd22100,1,0,0x5dde2d00,3,0
+    0x5dd22100,1,0,0x0d032500,1,1=0x5dd22100,1,0,0x5dde2d00,1,1
+    0x5dd22100,3,1,0x0d032500,3,0=0x5dd22100,3,1,0x5dde2d00,3,0
+    0x5dd22100,3,1,0x0d032500,1,1=0x5dd22100,3,1,0x5dde2d00,1,1
+ ;Monorail Diag Switch 1 -> HSRP Diag Switch 1                                              
+;HSRP Orth switch 1 next to...
+ ;Monorail Orth -> HSRP Orth
+    0x5dd29700,1,0,0x0d031500,1,0=0x5dd29700,1,0,0x5dd31500,1,0
+    0x5dd29700,1,0,0x0d031500,3,0=0x5dd29700,1,0,0x5dd31500,3,0
+    0x5dd29700,3,1,0x0d031500,1,0=0x5dd29700,3,1,0x5dd31500,1,0
+    0x5dd29700,3,1,0x0d031500,3,0=0x5dd29700,3,1,0x5dd31500,3,0
+ ;Monorail Orth Stub -> HSRP Orth Stub
+    0x5dd29700,1,0,0x0d000500,1,0=0x5dd29700,1,0,0x5dd00500,1,0
+    0x5dd29700,3,1,0x0d000500,1,0=0x5dd29700,3,1,0x5dd00500,1,0
+ ;Monorail Diag -> HSRP Diag                             ;Monorail Diag Stub -> HSRP Diag Stub                                       ;Monorail Curve Diag Side -> HSRP Curve Diag Side                                                   ;Monorail Curve Orth Side -> HSRP Curve Orth Side
+    0x5dd29700,1,0,0x0d031600,3,0=0x5dd29700,1,0,0x5dd22100,3,0
+    0x5dd29700,1,0,0x0d031600,1,1=0x5dd29700,1,0,0x5dd22100,1,1
+    0x5dd29700,3,1,0x0d031600,3,0=0x5dd29700,3,1,0x5dd22100,3,0
+    0x5dd29700,3,1,0x0d031600,1,1=0x5dd29700,3,1,0x5dd22100,1,1
+ ;Monorail Orth switch 1 -> HSRP Orth switch 1
+    0x5dd29700,1,0,0x0d031700,3,0=0x5dd29700,1,0,0x5dd29700,3,0
+    0x5dd29700,1,0,0x0d031700,1,1=0x5dd29700,1,0,0x5dd29700,1,1
+    0x5dd29700,3,0,0x0d031700,1,0=0x5dd29700,3,0,0x5dd29700,1,0
+    0x5dd29700,3,0,0x0d031700,3,1=0x5dd29700,3,0,0x5dd29700,3,1
+    0x5dd29700,1,1,0x0d031700,1,0=0x5dd29700,1,1,0x5dd29700,1,0
+    0x5dd29700,1,1,0x0d031700,3,1=0x5dd29700,1,1,0x5dd29700,3,1
+    0x5dd29700,3,1,0x0d031700,3,0=0x5dd29700,3,1,0x5dd29700,3,0
+    0x5dd29700,3,1,0x0d031700,1,1=0x5dd29700,3,1,0x5dd29700,1,1
+ ;Monorail Diag switch 2 -> HSRP Diag switch 2
+    0x5dd29700,1,0,0x0d02f900,1,0=0x5dd29700,1,0,0x5dd2f900,1,0
+    0x5dd29700,1,0,0x0d02f900,3,1=0x5dd29700,1,0,0x5dd2f900,3,1
+    0x5dd29700,3,1,0x0d02f900,1,0=0x5dd29700,3,1,0x5dd2f900,1,0
+    0x5dd29700,3,1,0x0d02f900,3,1=0x5dd29700,3,1,0x5dd2f900,3,1
+ ;Monorail Orth Switch 2 -> HSRP Orth Switch 2
+    0x5dd29700,1,0,0x0d032500,3,0=0x5dd29700,1,0,0x5dde2d00,3,0
+    0x5dd29700,1,0,0x0d032500,1,1=0x5dd29700,1,0,0x5dde2d00,1,1
+    0x5dd29700,3,0,0x0d032500,1,0=0x5dd29700,3,0,0x5dde2d00,1,0
+    0x5dd29700,3,0,0x0d032500,3,1=0x5dd29700,3,0,0x5dde2d00,3,1
+    0x5dd29700,1,1,0x0d032500,1,0=0x5dd29700,1,1,0x5dde2d00,1,0
+    0x5dd29700,1,1,0x0d032500,3,1=0x5dd29700,1,1,0x5dde2d00,3,1
+    0x5dd29700,3,1,0x0d032500,3,0=0x5dd29700,3,1,0x5dde2d00,3,0
+    0x5dd29700,3,1,0x0d032500,1,1=0x5dd29700,3,1,0x5dde2d00,1,1
+ ;Monorail Diag Switch 1 -> HSRP Diag Switch 1                                              
+;HSRP Diag switch 2 next to...
+ ;Monorail Orth -> HSRP Orth
+    0x5dd2f900,3,0,0x0d031500,1,0=0x5dd2f900,3,0,0x5dd31500,1,0
+    0x5dd2f900,3,0,0x0d031500,3,0=0x5dd2f900,3,0,0x5dd31500,3,0
+    0x5dd2f900,1,1,0x0d031500,1,0=0x5dd2f900,1,1,0x5dd31500,1,0
+    0x5dd2f900,1,1,0x0d031500,3,0=0x5dd2f900,1,1,0x5dd31500,3,0
+ ;Monorail Orth Stub -> HSRP Orth Stub
+    0x5dd2f900,3,0,0x0d000500,1,0=0x5dd2f900,3,0,0x5dd00500,1,0
+    0x5dd2f900,1,1,0x0d000500,1,0=0x5dd2f900,1,1,0x5dd00500,1,0
+ ;Monorail Diag -> HSRP Diag
+    0x5dd2f900,0,0,0x0d001a00,1,0=0x5dd2f900,0,0,0x5dd01a00,1,0
+    0x5dd2f900,0,0,0x0d001a00,0,1=0x5dd2f900,0,0,0x5dd01a00,0,1
+    0x5dd2f900,2,1,0x0d001a00,2,0=0x5dd2f900,2,1,0x5dd01a00,2,0
+    0x5dd2f900,2,1,0x0d001a00,3,1=0x5dd2f900,2,1,0x5dd01a00,3,1
+ ;Monorail Diag Stub -> HSRP Diag Stub
+    0x5dd2f900,0,0,0x0d000200,3,1=0x5dd2f900,0,0,0x5dd00200,3,1
+    0x5dd2f900,2,1,0x0d000200,1,0=0x5dd2f900,2,1,0x5dd00200,1,0
+ ;Monorail Curve Diag Side -> HSRP Curve Diag Side
+    0x5dd2f900,0,0,0x0d002200,0,1=0x5dd2f900,0,0,0x5dd14e00,0,1
+    0x5dd2f900,2,1,0x0d002200,2,0=0x5dd2f900,2,1,0x5dd14e00,2,0
+ ;Monorail Curve Orth Side -> HSRP Curve Orth Side
+    0x5dd2f900,3,0,0x0d031600,3,0=0x5dd2f900,3,0,0x5dd22100,3,0
+    0x5dd2f900,3,0,0x0d031600,1,1=0x5dd2f900,3,0,0x5dd22100,1,1
+    0x5dd2f900,1,1,0x0d031600,3,0=0x5dd2f900,1,1,0x5dd22100,3,0
+    0x5dd2f900,1,1,0x0d031600,1,1=0x5dd2f900,1,1,0x5dd22100,1,1
+ ;Monorail Orth switch 1 -> HSRP Orth switch 1
+    0x5dd2f900,3,0,0x0d031700,3,0=0x5dd2f900,3,0,0x5dd29700,3,0
+    0x5dd2f900,3,0,0x0d031700,1,1=0x5dd2f900,3,0,0x5dd29700,1,1
+    0x5dd2f900,1,1,0x0d031700,3,0=0x5dd2f900,1,1,0x5dd29700,3,0
+    0x5dd2f900,1,1,0x0d031700,1,1=0x5dd2f900,1,1,0x5dd29700,1,1
+ ;Monorail Diag switch 2 -> HSRP Diag switch 2
+    0x5dd2f900,0,0,0x0d02f900,2,0=0x5dd2f900,0,0,0x5dd2f900,2,0
+    0x5dd2f900,1,0,0x0d02f900,3,0=0x5dd2f900,1,0,0x5dd2f900,3,0
+    0x5dd2f900,1,0,0x0d02f900,1,1=0x5dd2f900,1,0,0x5dd2f900,1,1
+    0x5dd2f900,3,0,0x0d02f900,1,0=0x5dd2f900,3,0,0x5dd2f900,1,0
+    0x5dd2f900,3,0,0x0d02f900,3,1=0x5dd2f900,3,0,0x5dd2f900,3,1
+    0x5dd2f900,1,1,0x0d02f900,1,0=0x5dd2f900,1,1,0x5dd2f900,1,0
+    0x5dd2f900,1,1,0x0d02f900,3,1=0x5dd2f900,1,1,0x5dd2f900,3,1
+    0x5dd2f900,2,1,0x0d02f900,0,1=0x5dd2f900,2,1,0x5dd2f900,0,1
+    0x5dd2f900,3,1,0x0d02f900,3,0=0x5dd2f900,3,1,0x5dd2f900,3,0
+    0x5dd2f900,3,1,0x0d02f900,1,1=0x5dd2f900,3,1,0x5dd2f900,1,1
+ ;Monorail Orth Switch 2 -> HSRP Orth Switch 2
+    0x5dd2f900,0,0,0x0d032500,0,1=0x5dd2f900,0,0,0x5dde2d00,0,1
+    0x5dd2f900,3,0,0x0d032500,3,0=0x5dd2f900,3,0,0x5dde2d00,3,0
+    0x5dd2f900,3,0,0x0d032500,1,1=0x5dd2f900,3,0,0x5dde2d00,1,1
+    0x5dd2f900,1,1,0x0d032500,3,0=0x5dd2f900,1,1,0x5dde2d00,3,0
+    0x5dd2f900,1,1,0x0d032500,1,1=0x5dd2f900,1,1,0x5dde2d00,1,1
+    0x5dd2f900,2,1,0x0d032500,2,0=0x5dd2f900,2,1,0x5dde2d00,2,0
+ ;Monorail Diag Switch 1 -> HSRP Diag Switch 1
+    0x5dd2f900,0,0,0x0d001c00,0,1=0x5dd2f900,0,0,0x5dd31a00,0,1
+    0x5dd2f900,2,1,0x0d001c00,2,0=0x5dd2f900,2,1,0x5dd31a00,2,0
+
+;HSRP Orth Switch 2 next to...
+ ;Monorail Orth -> HSRP Orth
+    0x5dde2d00,1,0,0x0d031500,1,0=0x5dde2d00,1,0,0x5dd31500,1,0
+    0x5dde2d00,1,0,0x0d031500,3,0=0x5dde2d00,1,0,0x5dd31500,3,0
+    0x5dde2d00,3,1,0x0d031500,1,0=0x5dde2d00,3,1,0x5dd31500,1,0
+    0x5dde2d00,3,1,0x0d031500,3,0=0x5dde2d00,3,1,0x5dd31500,3,0
+ ;Monorail Orth Stub -> HSRP Orth Stub
+    0x5dde2d00,1,0,0x0d000500,1,0=0x5dde2d00,1,0,0x5dd00500,1,0
+    0x5dde2d00,3,1,0x0d000500,1,0=0x5dde2d00,3,1,0x5dd00500,1,0
+ ;Monorail Diag -> HSRP Diag
+    0x5dde2d00,0,0,0x0d001a00,2,0=0x5dde2d00,0,0,0x5dd01a00,2,0
+    0x5dde2d00,0,0,0x0d001a00,3,1=0x5dde2d00,0,0,0x5dd01a00,3,1
+    0x5dde2d00,2,1,0x0d001a00,1,0=0x5dde2d00,2,1,0x5dd01a00,1,0
+    0x5dde2d00,2,1,0x0d001a00,0,1=0x5dde2d00,2,1,0x5dd01a00,0,1
+ ;Monorail Diag Stub -> HSRP Diag Stub
+    0x5dde2d00,0,0,0x0d000200,1,0=0x5dde2d00,0,0,0x5dd00200,1,0
+    0x5dde2d00,2,1,0x0d000200,3,1=0x5dde2d00,2,1,0x5dd00200,3,1
+ ;Monorail Curve Diag Side -> HSRP Curve Diag Side
+    0x5dde2d00,0,0,0x0d002200,2,0=0x5dde2d00,0,0,0x5dd14e00,2,0
+    0x5dde2d00,2,1,0x0d002200,0,1=0x5dde2d00,2,1,0x5dd14e00,0,1
+ ;Monorail Curve Orth Side -> HSRP Curve Orth Side
+    0x5dde2d00,1,0,0x0d031600,3,0=0x5dde2d00,1,0,0x5dd22100,3,0
+    0x5dde2d00,1,0,0x0d031600,1,1=0x5dde2d00,1,0,0x5dd22100,1,1
+    0x5dde2d00,3,1,0x0d031600,3,0=0x5dde2d00,3,1,0x5dd22100,3,0
+    0x5dde2d00,3,1,0x0d031600,1,1=0x5dde2d00,3,1,0x5dd22100,1,1
+ ;Monorail Orth switch 1 -> HSRP Orth switch 1
+    0x5dde2d00,1,0,0x0d031700,3,0=0x5dde2d00,1,0,0x5dd29700,3,0
+    0x5dde2d00,1,0,0x0d031700,1,1=0x5dde2d00,1,0,0x5dd29700,1,1
+    0x5dde2d00,3,0,0x0d031700,1,0=0x5dde2d00,3,0,0x5dd29700,1,0
+    0x5dde2d00,3,0,0x0d031700,3,1=0x5dde2d00,3,0,0x5dd29700,3,1
+    0x5dde2d00,1,1,0x0d031700,1,0=0x5dde2d00,1,1,0x5dd29700,1,0
+    0x5dde2d00,1,1,0x0d031700,3,1=0x5dde2d00,1,1,0x5dd29700,3,1
+    0x5dde2d00,3,1,0x0d031700,3,0=0x5dde2d00,3,1,0x5dd29700,3,0
+    0x5dde2d00,3,1,0x0d031700,1,1=0x5dde2d00,3,1,0x5dd29700,1,1
+ ;Monorail Diag switch 2 -> HSRP Diag switch 2
+    0x5dde2d00,0,0,0x0d02f900,0,1=0x5dde2d00,0,0,0x5dd2f900,0,1
+    0x5dde2d00,1,0,0x0d02f900,1,0=0x5dde2d00,1,0,0x5dd2f900,1,0
+    0x5dde2d00,1,0,0x0d02f900,3,1=0x5dde2d00,1,0,0x5dd2f900,3,1
+    0x5dde2d00,2,1,0x0d02f900,2,0=0x5dde2d00,2,1,0x5dd2f900,2,0
+    0x5dde2d00,3,1,0x0d02f900,1,0=0x5dde2d00,3,1,0x5dd2f900,1,0
+    0x5dde2d00,3,1,0x0d02f900,3,1=0x5dde2d00,3,1,0x5dd2f900,3,1
+ ;Monorail Orth Switch 2 -> HSRP Orth Switch 2
+    0x5dde2d00,0,0,0x0d032500,2,0=0x5dde2d00,0,0,0x5dde2d00,2,0
+    0x5dde2d00,1,0,0x0d032500,3,0=0x5dde2d00,1,0,0x5dde2d00,3,0
+    0x5dde2d00,1,0,0x0d032500,1,1=0x5dde2d00,1,0,0x5dde2d00,1,1
+    0x5dde2d00,3,0,0x0d032500,1,0=0x5dde2d00,3,0,0x5dde2d00,1,0
+    0x5dde2d00,3,0,0x0d032500,3,1=0x5dde2d00,3,0,0x5dde2d00,3,1
+    0x5dde2d00,1,1,0x0d032500,1,0=0x5dde2d00,1,1,0x5dde2d00,1,0
+    0x5dde2d00,1,1,0x0d032500,3,1=0x5dde2d00,1,1,0x5dde2d00,3,1
+    0x5dde2d00,2,1,0x0d032500,0,1=0x5dde2d00,2,1,0x5dde2d00,0,1
+    0x5dde2d00,3,1,0x0d032500,3,0=0x5dde2d00,3,1,0x5dde2d00,3,0
+    0x5dde2d00,3,1,0x0d032500,1,1=0x5dde2d00,3,1,0x5dde2d00,1,1
+ ;Monorail Diag Switch 1 -> HSRP Diag Switch 1
+    0x5dde2d00,0,0,0x0d001c00,2,0=0x5dde2d00,0,0,0x5dd31a00,2,0
+    0x5dde2d00,2,1,0x0d001c00,0,1=0x5dde2d00,2,1,0x5dd31a00,0,1
+
+;HSRP Diag Switch 1 next to...
+ ;Monorail Orth -> HSRP Orth                             ;Monorail Orth Stub -> HSRP Orth Stub                                       ;Monorail Diag -> HSRP Diag
+    0x5dd31a00,0,0,0x0d001a00,2,0=0x5dd31a00,0,0,0x5dd01a00,2,0
+    0x5dd31a00,0,0,0x0d001a00,3,1=0x5dd31a00,0,0,0x5dd01a00,3,1
+    0x5dd31a00,2,1,0x0d001a00,1,0=0x5dd31a00,2,1,0x5dd01a00,1,0
+    0x5dd31a00,2,1,0x0d001a00,0,1=0x5dd31a00,2,1,0x5dd01a00,0,1
+ ;Monorail Diag Stub -> HSRP Diag Stub
+    0x5dd31a00,0,0,0x0d000200,1,0=0x5dd31a00,0,0,0x5dd00200,1,0
+    0x5dd31a00,2,1,0x0d000200,3,1=0x5dd31a00,2,1,0x5dd00200,3,1
+ ;Monorail Curve Diag Side -> HSRP Curve Diag Side
+    0x5dd31a00,0,0,0x0d002200,2,0=0x5dd31a00,0,0,0x5dd14e00,2,0
+    0x5dd31a00,2,1,0x0d002200,0,1=0x5dd31a00,2,1,0x5dd14e00,0,1
+ ;Monorail Curve Orth Side -> HSRP Curve Orth Side                                                   ;Monorail Orth switch 1 -> HSRP Orth switch 1                                               ;Monorail Diag switch 2 -> HSRP Diag switch 2
+    0x5dd31a00,0,0,0x0d02f900,0,1=0x5dd31a00,0,0,0x5dd2f900,0,1
+    0x5dd31a00,2,1,0x0d02f900,2,0=0x5dd31a00,2,1,0x5dd2f900,2,0
+ ;Monorail Orth Switch 2 -> HSRP Orth Switch 2
+    0x5dd31a00,0,0,0x0d032500,2,0=0x5dd31a00,0,0,0x5dde2d00,2,0
+    0x5dd31a00,2,1,0x0d032500,0,1=0x5dd31a00,2,1,0x5dde2d00,0,1
+ ;Monorail Diag Switch 1 -> HSRP Diag Switch 1
+    0x5dd31a00,0,0,0x0d001c00,2,0=0x5dd31a00,0,0,0x5dd31a00,2,0
+    0x5dd31a00,3,0,0x0d001c00,1,0=0x5dd31a00,3,0,0x5dd31a00,1,0
+    0x5dd31a00,3,0,0x0d001c00,3,1=0x5dd31a00,3,0,0x5dd31a00,3,1
+    0x5dd31a00,1,1,0x0d001c00,1,0=0x5dd31a00,1,1,0x5dd31a00,1,0
+    0x5dd31a00,1,1,0x0d001c00,3,1=0x5dd31a00,1,1,0x5dd31a00,3,1
+    0x5dd31a00,2,1,0x0d001c00,0,1=0x5dd31a00,2,1,0x5dd31a00,0,1
+
+;259 RULs generated

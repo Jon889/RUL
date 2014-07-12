@@ -1,0 +1,5 @@
+	gcc -MM *.c > gccout
+	echo -e "/#dependencies#/ {r gccout\n d\n}" > temp.sed
+	sed -f temp.sed Makefile.template > Makefile
+	rm gccout
+	rm temp.sed
