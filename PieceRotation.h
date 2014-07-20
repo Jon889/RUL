@@ -8,11 +8,16 @@
 struct PieceRotation_s {
     NetworkFlags *network1;
     NetworkFlags *network2;
+    NetworkFlags *override1;
     Transformation transformation;
 };
 
 PieceRotation * pieceRotation_create(NetworkFlag west, NetworkFlag north, NetworkFlag east, NetworkFlag south, Rotation rotation, Flip flip);
+PieceRotation * pieceRotation_create_s(NetworkFlags nf, Rotation rotation, Flip flip);
 void pieceRotation_addNetwork2(PieceRotation *pr, NetworkFlag west, NetworkFlag north, NetworkFlag east, NetworkFlag south);
+void pieceRotation_addNetwork2_s(PieceRotation *pr, NetworkFlags nf);
+void pieceRotation_addOverride1(PieceRotation *pr, NetworkFlag west, NetworkFlag north, NetworkFlag east, NetworkFlag south);
+void pieceRotation_addOverride1_s(PieceRotation *pr, NetworkFlags nf);
 void pieceRotation_destroy(PieceRotation *pr);
 PieceRotation * pieceRotation_clone(PieceRotation *pr);
 

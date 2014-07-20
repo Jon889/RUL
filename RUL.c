@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <ctype.h>
 #include "RUL.h"
 #include "List.h"
-#include "Map.h"
 #include "Piece.h"
 #include "PieceRotation.h"
 #include "NetworkFlags.h"
@@ -29,7 +29,7 @@ const Flip Flip_Mirrored = 1;
 char * seekAfter(char **str, char chr) {
     return *str = strchr(*str, chr) + 1;
 }
-
+bool parseInstanceID(char *str, InstanceID *iid, int *rotationIdx);
 
 
 
@@ -46,7 +46,7 @@ Piece * list_pieceWithTextureID(List *list, InstanceID textureID) {
 }
 
 
-
+char * str_dup(char *str);
 
 void readRUL(char *path, List *list) {
     FILE *fp = fopen(path , "r");
@@ -63,6 +63,7 @@ void readRUL(char *path, List *list) {
         if (str[0] == '1') {
             assert(latestPiece == NULL);
             latestPiece = piece_createEmpty();
+            latestPiece->network1Name = str_dup("MonoRail");
             holder.west = atoi(seekAfter(&istr, ','));
             holder.north = atoi(seekAfter(&istr, ','));
             holder.east = atoi(seekAfter(&istr, ','));
@@ -90,72 +91,139 @@ void readRUL(char *path, List *list) {
 }
 
 
-
-
-
-void readVirtualPieces(FILE *fp, List *pieceList) {
-    char str[60];
-    while (fgets(str, 60, fp)!= NULL) {
-        if (strncmp(str, "#End", 4) == 0) {
-            return;
-        }
-        char *line = str;
-        InstanceID newPieceID = strtol(line, NULL, 16);
-        InstanceID basePieceID = strtol(seekAfter(&line, ','), NULL, 16);
-        Piece *basePiece = list_pieceWithTextureID(pieceList, basePieceID);
-        Piece *newPiece = piece_clone(basePiece);
-        newPiece->textureIID = newPieceID;
-        list_addValue(pieceList, newPiece);
-    }
+char * str_dup(char *str) {
+    char *newString = calloc(strlen(str) + 1, sizeof(char));
+    strcpy(newString, str);
+    return newString;
 }
 
-void readMap(char *path, Map *map, List *pieceList) {
+int countChar(char *str, char chr) {
+    int count = 0;
+    while (*str != '\0') {
+        if (*str++ == chr) {
+            count++;
+        }
+    }
+    return count;
+}
+#define READ_FLAGS(nf) nf.west = strtol(strtok(NULL, ","), NULL, 10);\
+nf.north = strtol(strtok(NULL, ","), NULL, 10);\
+nf.east = strtol(strtok(NULL, ","), NULL, 10);\
+nf.south = strtol(strtok(NULL, ","), NULL, 10);
+bool readPiece(char *str, List *list) {
+    /*
+     ;IID,simple,n1name,w1,n1,e1,s1,ow1,on1,oe1,os1,piece name(12)
+     ;IID,simple,n1name,w1,n1,e1,s1,piece name(8)
+     ;IID,simple,n1name,w1,n1,e1,s1,ow1,on1,oe1,os1,n2name,w2,n2,e2,s2,piece name(17)
+     ;IID,simple,n1name,w1,n1,e1,s1,n2name,w2,n2,e2,s2,piece name(13)
+     */
+    int fieldCount = countChar(str, ',') + 1;
+    int SingleOverrideFieldCount = 12;
+    int SingleBaseFieldCount = 8;
+    int DualOverrideFieldCount = 17;
+    int DualBaseFieldCount = 13;
+    if (fieldCount != SingleOverrideFieldCount && fieldCount != SingleBaseFieldCount
+        && fieldCount != DualOverrideFieldCount && fieldCount != DualBaseFieldCount) {
+        printf("unexpected number of fields, has %i, expected %i, %i, %i or %i.\n", fieldCount,
+               SingleOverrideFieldCount, SingleBaseFieldCount, DualOverrideFieldCount, DualBaseFieldCount);
+        return false;
+    }
+    bool hasOverrideFlags = fieldCount == SingleOverrideFieldCount || fieldCount == DualOverrideFieldCount;
+    bool isDualPiece = fieldCount == DualBaseFieldCount || fieldCount == DualOverrideFieldCount;
+    InstanceID iid = strtol(strtok(str, ","), NULL, 16);
+    bool simple = strcmp(strtok(NULL,  ","), "S") == 0;
+    char *n1Name = strtok(NULL, ",");
+    NetworkFlags n1;
+    READ_FLAGS(n1);
+    NetworkFlags o1;
+    if (hasOverrideFlags) {
+        READ_FLAGS(o1);
+    }
+    char *n2name;
+    NetworkFlags n2;
+    if (isDualPiece) {
+        n2name = strtok(NULL, ",");
+        READ_FLAGS(n2);
+    }
+    char *name = strtok(NULL, ",");
+    while (isspace(name[strlen(name) - 1])) {
+        name[strlen(name) - 1] = '\0';
+    }
+    Piece *newPiece = piece_create(iid, str_dup(name), simple);
+    newPiece->network1Name = str_dup(n1Name);
+    PieceRotation *baseRotation = pieceRotation_create_s(n1, 0, 0);
+    if (hasOverrideFlags) {
+        pieceRotation_addOverride1_s(baseRotation, o1);
+    }
+    if (isDualPiece) {
+        int i = 0;
+        char *n2subname = strtok(n2name, "|");
+        while (n2subname != NULL) {
+            newPiece->network2Names[i++] = str_dup(n2subname);
+        }
+        pieceRotation_addNetwork2_s(baseRotation, n2);
+    }
+    piece_fillRotationsFromBase(newPiece, baseRotation);
+    list_addValue(list, newPiece);
+    return true;
+}
+bool lineIsSpace(char *str) {
+    while (*str != '\0') {
+        if (!isspace(*str++)) {
+            return false;
+        }
+    }
+    return true;
+}
+bool readFalseIntersection(char *str, List *ignoreList) {
+    InstanceID *iid = calloc(1, sizeof(InstanceID));
+    if (parseInstanceID(str, iid, NULL)) {
+        list_addValue(ignoreList, iid);
+    }
+    return true;
+}
+
+typedef enum {
+    NoSection,
+    OverridePieceSection,
+    BasePieceSection,
+    FalseIntersectionSection
+} MapSection;
+void readMap(char *path, List *pieceList, List *ignoreList) {
     FILE *fp = fopen(path , "r");
     if (fp == NULL) {
         perror("Error opening file");
         exit(1);
     }
-    char str[60];
-    while (fgets(str, 60, fp)!= NULL) {
-        if (str[0] == '#') {
-            char *vpStr = "#VirtualPieces";
-            if (strncmp(str, vpStr, strlen(vpStr)) == 0) {
-                readVirtualPieces(fp, pieceList);
-            } else {
-                char *comma = strchr(str, ',');
-                *comma = '\0';
-                char *nl = strchr(comma + 1, '\n');
-                if (nl != NULL) {
-                    *nl = '\0';
-                }
-                map->baseName = calloc(60, sizeof(char));
-                map->overrideName = calloc(60, sizeof(char));
-                strncpy(map->baseName, str + 1, 60);
-                strncpy(map->overrideName, comma + 1, 60);
+    char str[600];
+    MapSection currentSection = NoSection;
+    while (fgets(str, 600, fp)!= NULL) {
+        if (lineIsSpace(str)
+            || str[0] == ';') {
+        } else if (str[0] == '[') {
+            char *opStr = "[OverridePieces]";
+            char *bpStr = "[BasePieces]";
+            char *fiStr = "[FalseIntersections]";
+            if (strncmp(str, opStr, strlen(opStr)) == 0) {
+                currentSection = OverridePieceSection;
+            } else if (strncmp(str, bpStr, strlen(bpStr)) == 0) {
+                currentSection = BasePieceSection;
+            } else if (strncmp(str, fiStr, strlen(fiStr)) == 0) {
+                currentSection = FalseIntersectionSection;
             }
         } else {
-            MappingValue *value = mappingValue_createEmpty();
-            char *line = str;
-            int baseIID = strtol(line, NULL, 16);
-            value->basePiece = list_pieceWithTextureID(pieceList, baseIID);
-            if (value->basePiece != NULL) {
-            
-                int overtexid = strtol(seekAfter(&line, ','), NULL, 16);
-                char *simple = seekAfter(&line, ',');
-                if (simple[0] == 'S') {
-                    value->basePiece->simple = true;
-                }
-                value->overridePiece = piece_clone(value->basePiece);
-                value->overridePiece->textureIID = overtexid;
-                
-                char *name = seekAfter(&line, ',');
-                char *nl = strchr(name, '\n');
-                if (nl != NULL) {
-                    *nl = '\0';
-                }
-                value->basePiece->name = calloc(strlen(name) + 1, sizeof(char));
-                strcpy(value->basePiece->name, name);
-                list_addValue(map->mapping, value);
+            switch (currentSection) {
+                case FalseIntersectionSection:
+                    readFalseIntersection(str, ignoreList);
+                    break;
+                case BasePieceSection:
+
+                    break;
+                case OverridePieceSection:
+                    readPiece(str, pieceList);
+                    break;
+                case NoSection:
+                    break;
             }
         }
     }
@@ -169,7 +237,7 @@ NetworkFlag intersectionFlags(char **str) {
     return strtol(flagStr, NULL, 10);
 }
 
-void readIntersections(char *path, char *networkName, List *list) {
+void readIntersections(char *path, char *networkName, List *list, List *ignoreList) {
     FILE *fp = fopen(path , "r");
     if (fp == NULL) {
         perror("Error opening file");
@@ -177,6 +245,7 @@ void readIntersections(char *path, char *networkName, List *list) {
     }
     bool inRelevantSection = false;
     bool firstNetworkIsMonorail = false;
+    char *otherNetworkName = NULL;
     char str[1200];
     while (fgets(str, 1200, fp)!= NULL) {
         if (str[0] == '[') {
@@ -184,6 +253,18 @@ void readIntersections(char *path, char *networkName, List *list) {
             if (mrStr != NULL) {
                 inRelevantSection = true;
                 firstNetworkIsMonorail = (mrStr == str + 1);
+                if (otherNetworkName != NULL) {
+                    free(otherNetworkName);
+                    otherNetworkName = NULL;
+                }
+                if (firstNetworkIsMonorail) {
+                    otherNetworkName = str + 1 + strlen("MonoRail");
+                    *strstr(str, "IntersectionSolutions") = '\0';
+                } else {
+                    otherNetworkName = str + 1;
+                    *strstr(str, "MonoRail") = '\0';
+                }
+                otherNetworkName = str_dup(otherNetworkName);
             } else {
                 inRelevantSection = false;
             }
@@ -207,26 +288,39 @@ void readIntersections(char *path, char *networkName, List *list) {
                 n2.north = intersectionFlags(&line);
                 n2.west = intersectionFlags(&line);
                 InstanceID textureIID = strtol(seekAfter(&line, ','), NULL, 16);
-                Rotation rot = strtol(seekAfter(&line, ','), NULL, 10);
-                Flip flip = strtol(seekAfter(&line, ','), NULL, 10);
-                if (rot == 0 && flip == 0) {
-                    Piece *testPiece = piece_create(textureIID, NULL, false);
-                    NetworkFlags monorail = n2;
-                    NetworkFlags other = n1;
-                    if (firstNetworkIsMonorail) {
-                        monorail = n1;
-                        other = n2;
+                InstanceID *iid;
+                bool ignore = false;
+                for (each_in_list(ignoreList, iid)) {
+                    if (*iid == textureIID) {
+                        ignore = true;
                     }
-                    PieceRotation *rot0 = pieceRotation_create(monorail.west,monorail.north,monorail.east,monorail.south,rot,flip);
-                    pieceRotation_addNetwork2(rot0, other.west,other.north,other.east,other.south);
-                    piece_fillRotationsFromBase(testPiece, rot0);
-                    
-                    list_addValue(list, testPiece);
+                }
+                if (!ignore) {
+                    Rotation rot = strtol(seekAfter(&line, ','), NULL, 10);
+                    Flip flip = strtol(seekAfter(&line, ','), NULL, 10);
+                    if (rot == 0 && flip == 0) {
+                        Piece *testPiece = piece_create(textureIID, NULL, false);
+                        testPiece->network1Name = str_dup("MonoRail");
+                        testPiece->network2Names[0] = str_dup(otherNetworkName);
+                        NetworkFlags monorail = n2;
+                        NetworkFlags other = n1;
+                        if (firstNetworkIsMonorail) {
+                            monorail = n1;
+                            other = n2;
+                        }
+                        PieceRotation *rot0 = pieceRotation_create(monorail.west,monorail.north,monorail.east,monorail.south,rot,flip);
+                        pieceRotation_addNetwork2(rot0, other.west,other.north,other.east,other.south);
+                        piece_fillRotationsFromBase(testPiece, rot0);
+                        
+                        list_addValue(list, testPiece);
+                    }
                 }
             }
         }
     }
-
+    if (otherNetworkName != NULL) {
+        free(otherNetworkName);
+    }
     
 }
 
@@ -238,47 +332,246 @@ void list_map(List *list, void (*fn)(void *)) {
 }
 
 void piece_print(Piece *piece) {
-    printf("0x%08x %s\n", piece->textureIID, piece->name);
-    for (int i = 0; i < 8; i++) {
-        pieceRotation_print(piece->rotations[i]);
+    printf("0x%08x %s %s\n", piece->textureIID, piece->network1Name, piece->network2Names[0]);
+}
+
+bool parseRotation(char *str, Rotation *rotation) {
+    if (str == NULL) {
+        printf("Missing rotation\n");
+        return false;
+    }
+    Rotation rot = strtol(str, NULL, 10);
+    if (rot < 0 || rot > 3) {
+        printf("Invalid rotation, must be 0,1,2 or 3\n");
+        return false;
+    }
+    *rotation = rot;
+    return true;
+}
+bool parseFlip(char *str, Flip *flip) {
+    if (str == NULL) {
+        printf("Missing flip\n");
+        return false;
+    }
+    Flip f = strtol(str, NULL, 10);
+    if (f != 0 && f != 1) {
+        printf("Invalid flip, must be 0 or 1\n");
+        return false;
+    }
+    *flip = f;
+    return true;
+}
+
+
+
+bool pieceRotation_matches(PieceRotation *pr, NetworkFlags *flags, NetworkFlags *n2flags, int *overrideMatchCount) {
+    *overrideMatchCount = 0;
+    //each flag must match either the override or base flag
+    if (networkFlag_matches(pr->override1->west, flags->west, false)) {
+        (*overrideMatchCount)++;
+    } else if (!networkFlag_matches(pr->network1->west, flags->west, false)) {
+        return false;
+    }
+    if (networkFlag_matches(pr->override1->north, flags->north, false)) {
+        (*overrideMatchCount)++;
+    } else if (!networkFlag_matches(pr->network1->north, flags->north, false)) {
+        return false;
+    }
+    if (networkFlag_matches(pr->override1->east, flags->east, false)) {
+        (*overrideMatchCount)++;
+    } else if (!networkFlag_matches(pr->network1->east, flags->east, false)) {
+        return false;
+    }
+    if (networkFlag_matches(pr->override1->south, flags->south, false)) {
+        (*overrideMatchCount)++;
+    } else if (!networkFlag_matches(pr->network1->south, flags->south, false)) {
+        return false;
+    }
+    //network1/override1 is a match
+    return networkFlags_equal(pr->network2, n2flags);
+    
+}
+//Piece *list_findPieceWithNetworkFlags(List *list, char *n1name, NetworkFlags *n1flags, char *n2names[10], NetworkFlags *n2flags, Rotation *rot);
+void attemptRULsForPieces(List *list, Piece *leftPiece, Piece *rightPiece) {
+    for (int left = 0; left < (leftPiece->simple ? 4 : 8); left++) {
+        for (int right = 0; right < (rightPiece->simple ? 4 : 8); right++) {
+            PieceRotation *rightRotation = rightPiece->rotations[right];
+            if (pieceRotation_fitsLeftOfPieceRotation(leftPiece->rotations[left], rightRotation)) {
+                Rotation rot;
+                Piece *rightOverridePiece = list_findPieceWithNetworkFlags(list, "HSR", rightRotation->network1, rightPiece->network2Names, rightRotation->network2, &rot);
+                if (rightOverridePiece == NULL) {
+                    printf(";missing piece 0x%08x | 0x%08x -> ", leftPiece->textureIID, rightPiece->textureIID);
+                    networkFlags_print(rightRotation->network1);
+                    printf(" n2: ");
+                    networkFlags_print(rightRotation->network2);
+                    printf("\n");
+                } else {
+                    if (piece_printRUL(leftPiece, left, rightPiece, right, leftPiece, left, rightOverridePiece, rot)) {
+                        printf("\n");
+                    }
+                }
+            }
+        }
     }
 }
 
+bool parseInstanceID(char *str, InstanceID *iid, int *rotationIdx) {
+    char *iidStr = strtok(str, ",");
+    if (iidStr == NULL) {
+        printf("Invalid IID string, must be in format 0x######## or 0x########,r,f\n");
+        return false;
+    }
+    *iid = strtol(iidStr, NULL, 16);
+    Rotation rotation;
+    Flip flip;
+    char *rStr = strtok(NULL, ",");
+    if (rStr == NULL) {
+        return true;
+    }
+    if (!parseRotation(rStr, &rotation)) {
+        return false;
+    }
+    if (!parseFlip(strtok(NULL, ","), &flip)) {
+        return false;
+    }
+    *rotationIdx = rotation + flip * 4;
+    return true;
+}
+
 int main(int argc, char **argv) {
+    assert(argc >= 2);
     List *list = list_create();
+    List *ignoreList = list_create();
     readRUL("/Users/jonathan/Desktop/file_dec00000000.rul", list);
-    readIntersections("/Users/jonathan/Desktop/file_dec00000002.rul", NULL, list);
-    Map *map = map_createEmpty();
-    readMap("/Users/jonathan/RUL/hsr.txt", map, list);
+    readMap(argv[1], list, ignoreList);
+    readIntersections("/Users/jonathan/Desktop/file_dec00000002.rul", NULL, list, ignoreList);
+
     
 
-    if (argc == 2) {
-        int id = strtol(argv[1], NULL, 16);
-        piece_printAsciiArt(list_pieceWithTextureID(list, id), 0);
-        return 0;
+    if (argc >= 3) {
+        int commandIdx = 2;
+        if (strcmp(argv[commandIdx], "print") == 0) {
+            if (argc == 4) {//RUL map.txt print IID[,r,f]
+                int rot = -1;
+                InstanceID iid;
+                if (!parseInstanceID(argv[commandIdx + 1], &iid, &rot)) {
+                    return 1;
+                }
+                Piece *piece = list_pieceWithTextureID(list, iid);
+                if (piece == NULL) {
+                    printf("No piece with IID: 0x%08x\n", iid);
+                    return 1;
+                }
+                if (rot == -1) {
+                    for (int i = 0; i < 8; i++) {
+                        piece_printAsciiArt(piece, i);
+                        printf("\n");
+                    }
+                } else {
+                    piece_printAsciiArt(piece, rot);
+                }
+                return 0;
+            } else if (argc == 5) {//RUL map.txt print IID[,r,f] IID[r,f]
+                int leftRot = -1;
+                InstanceID leftIID;
+                if (!parseInstanceID(argv[commandIdx + 1], &leftIID, &leftRot)) {
+                    return 1;
+                }
+                int rightRot = -1;
+                InstanceID rightIID;
+                if (!parseInstanceID(argv[commandIdx + 2], &rightIID, &rightRot)) {
+                    return 1;
+                }
+                Piece *leftPiece = list_pieceWithTextureID(list, leftIID);
+                if (leftPiece == NULL) {
+                    printf("No piece with IID: 0x%08x\n", leftIID);
+                    return 1;
+                }
+                Piece *rightPiece = list_pieceWithTextureID(list, rightIID);
+                if (rightPiece == NULL) {
+                    printf("No piece with IID: 0x%08x\n", rightIID);
+                    return 1;
+                }
+                for (int left = (leftRot == -1 ? 0 : leftRot); left <= (leftRot == -1 ? (leftPiece->simple ? 3 : 7) : leftRot); left++) {
+                    for (int right = (rightRot == -1 ? 0 : rightRot); right <= (rightRot == -1 ? (rightPiece->simple ? 3 : 7) : rightRot); right++) {
+                        piece_printAsciiArtPair(leftPiece, left, rightPiece, right);
+                    }
+                }
+                return 0;
+            } else {
+                printf("Incorrect parameters\n");
+                printf("To print the rotation(s) of a piece:\n\t%s %s print 0x########[,r,f]\n", argv[0], argv[1]);
+                printf("To print the possible pairings of 2 pieces:\n\t%s %s print 0x########[,r,f] 0x########[,r,f]\n", argv[0], argv[1]);
+                return 1;
+            }
+        } else if (strcmp(argv[commandIdx], "find") == 0) {
+            //find n1name W N E S [n2name W N E S]
+            if (argc >= 8) {
+                char *n1name = argv[commandIdx + 1];
+                NetworkFlags n1;
+                n1.west = strtol(argv[commandIdx + 2], NULL, 10);
+                n1.north = strtol(argv[commandIdx + 3], NULL, 10);
+                n1.east = strtol(argv[commandIdx + 4], NULL, 10);
+                n1.south = strtol(argv[commandIdx + 5], NULL, 10);
+                NetworkFlags n2;
+                char *n2names[10];
+                if (argc == 13) {
+                    n2names[0] = argv[commandIdx + 6];
+                    n2.west = strtol(argv[commandIdx + 7], NULL, 10);
+                    n2.north = strtol(argv[commandIdx + 8], NULL, 10);
+                    n2.east = strtol(argv[commandIdx + 9], NULL, 10);
+                    n2.south = strtol(argv[commandIdx + 10], NULL, 10);
+                }
+            
+                Rotation rot;
+                Piece *piece = list_findPieceWithNetworkFlags(list, n1name, &n1, n2names, argc == 13 ? &n2 : NULL, &rot);
+                if (piece == NULL) {
+                    printf("No piece found\n");
+                    return 0;
+                }
+                piece_printAsciiArt(piece, rot);
+                return 0;
+            }
+        } else if (strcmp(argv[commandIdx], "list") == 0) {
+            list_map(list, (void (*)(void *))&piece_print);
+            return 0;
+        } else if (strcmp(argv[commandIdx], "ruls") == 0) {
+            if (argc == 3) {
+                int totalRulsPrinted = 0;
+                Piece *leftPiece = NULL;
+                for (each_in_list(list, leftPiece)) {
+                    Piece *rightPiece = NULL;
+                    for (each_in_list(list, rightPiece)) {
+                        attemptRULsForPieces(list, leftPiece, rightPiece);
+                    }
+                }
+                printf(";%i RULs generated\n", totalRulsPrinted);
+            } else if (argc == 4 || argc == 5) {
+                InstanceID leftIID;
+                if (parseInstanceID(argv[commandIdx + 1], &leftIID, NULL)) {
+                    Piece *leftPiece = list_pieceWithTextureID(list, leftIID);
+                    if (strcmp(leftPiece->network1Name, "HSR") != 0) {
+                        printf("Left piece must be HSR\n");
+                        return 1;
+                    }
+                    if (argc == 5) {
+                        InstanceID rightIID;
+                        if (parseInstanceID(argv[commandIdx + 2], &rightIID, NULL)) {
+                            Piece *rightPiece = list_pieceWithTextureID(list, rightIID);
+                            attemptRULsForPieces(list, leftPiece, rightPiece);
+                        }
+                    } else {
+                        Piece *rightPiece = NULL;
+                        for (each_in_list(list, rightPiece)) {
+                            attemptRULsForPieces(list, leftPiece, rightPiece);
+                        }
+                    }
+                    return 0;
+                }
+                
+            }
+        }
     }
-    
-    if (argc == 3) {
-        int leftId = strtol(argv[1], NULL, 16);
-        int rightId = strtol(argv[2], NULL, 16);
-        piece_printRulesOfPieces(list_pieceWithTextureID(list, leftId), list_pieceWithTextureID(list, rightId), NULL, true, true);
-        return 0;
-    }
-    if (argc == 5) {
-        int leftId = strtol(argv[1], NULL, 16);
-        int leftRot = strtol(argv[2], NULL, 10);
-        int rightId = strtol(argv[3], NULL, 16);
-        int rightRot = strtol(argv[4], NULL, 10);
-        piece_printAsciiArtPair(list_pieceWithTextureID(list, leftId), leftRot, list_pieceWithTextureID(list, rightId), rightRot);
-        return 0;
-    }
-    MappingValue *mapValue = NULL;
-    int totalRulsPrinted = 0;
-    for (each_in_list(map->mapping, mapValue)) {
-        printf(";%s %s next to...\n", map->overrideName, mapValue->basePiece->name);
-        totalRulsPrinted += piece_printRules(mapValue->overridePiece, map, list);
-        printf("\n");
-    }
-    printf(";%i RULs generated\n", totalRulsPrinted);
+
     list_destroy(list);
 }

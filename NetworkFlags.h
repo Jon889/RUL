@@ -14,6 +14,7 @@ void networkFlags_destroy(NetworkFlags *nf);
 void networkFlags_mirror(NetworkFlags *piece);
 void networkFlags_rotate90MC(NetworkFlags *piece);
 void networkFlags_rotate90C(NetworkFlags *piece);
-bool networkFlags_fitsLeftOfNetworkFlags(NetworkFlags *left, NetworkFlags *right, bool zerosCanMatch);
+bool networkFlag_matches(NetworkFlag left, NetworkFlag right, bool zerosCanMatch);
 void networkFlags_print(NetworkFlags *nf);
+bool networkFlags_equal(NetworkFlags *nf1, NetworkFlags *nf2);
 #endif

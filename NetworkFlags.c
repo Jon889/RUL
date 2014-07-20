@@ -27,6 +27,31 @@ void mirrorLRFlipper(NetworkFlag *flag) {
         case 13:
             *flag = 11;
             break;
+        case 52:
+            *flag = 32;
+            break;
+        case 32:
+            *flag = 52;
+            break;
+        case 23:
+            *flag = 21;
+            break;
+        case 21:
+            *flag = 23;
+            break;
+        case 42:
+            *flag = 22;
+            break;
+        case 22:
+            *flag = 42;
+            break;
+    }
+    if (*flag > 100) {
+        if (*flag % 10 == 3) {
+            *flag -= 2;
+        } else if (*flag % 10 == 1) {
+            *flag += 2;
+        }
     }
 }
 
@@ -54,22 +79,25 @@ void networkFlags_rotate90C(NetworkFlags *piece) {
     piece->north = piece->west;
     piece->west = oldSouth;
 }
-
-bool networkFlags_fitsLeftOfNetworkFlags(NetworkFlags *left, NetworkFlags *right, bool zerosCanMatch) {
-    if (left->east == right->west && (zerosCanMatch || left->east != NetworkFlag_None)) {
+bool networkFlags_equal(NetworkFlags *nf1, NetworkFlags *nf2) {
+    return (nf1->west == nf2->west && nf1->north == nf2->north
+            && nf1->east == nf2->east && nf1->south == nf2->south);
+}
+bool networkFlag_matches(NetworkFlag left, NetworkFlag right, bool zerosCanMatch) {
+    if (left == right && (zerosCanMatch || left != NetworkFlag_None)) {
         return true;
     }
-    if ((left->east == 11 && right->west == 1)
-        || (left->east == 1 && right->west == 11)) {
+    if ((left == 11 && right == 1)
+        || (left == 1 && right == 11)) {
         return true;
     }
-    if ((left->east == 13 && right->west == 3)
-        || (left->east == 3 && right->west == 13)) {
+    if ((left == 13 && right == 3)
+        || (left == 3 && right == 13)) {
         return true;
     }
     return false;
 }
 
 void networkFlags_print(NetworkFlags *nf) {
-    printf("W:%i N:%i E:%i S:%i\n", nf->west, nf->north, nf->east, nf->south);
+    printf("W:%i N:%i E:%i S:%i", nf->west, nf->north, nf->east, nf->south);
 }
