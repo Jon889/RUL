@@ -1,4 +1,5 @@
 [FalseIntersections]
+;Pieces to ignore when reading the RUL1 file
 0x5dd31500
 
 [OverridePieces]
@@ -15,15 +16,88 @@
 0x5dd01a00,N,HSR,0,0,1,3,Diag
 0x5dd00200,N,HSR,0,0,0,1,Diag Stub
 
-0x5dd1c100,N,HSR,0,2,0,2,0,2,0,113,HSR C1
+0x5dd1c100,N,HSR,0,2,0,2,0,113,0,2,HSR C1
 0x5dd22100,N,HSR,0,2,0,22,0,113,0,22,Curve Orth Side (C2)
 0x5dd14e00,N,HSR,0,0,1,22,0,0,121,22,Curve Diag Side (C3)
-0x5dd18b00,N,HSR,121,133,0,0,HSR C4
-0x5dd19500,N,HSR,0,0,1,133,HSR C5
+0x5dd18b00,N,HSR,1,3,0,0,121,133,0,0,HSR C4
+0x5dd19500,N,HSR,0,0,1,3,0,0,1,133,HSR C5
 
-0x5dd2ff00,N,HSR,0,143,0,2,Orth switch -1
+0x5dd2ff00,N,HSR,0,2,0,2,0,143,0,2,Orth switch -1
 0x5dd29700,N,HSR,0,2,0,32,0,143,0,32,Orth switch 1
-0x5dde2d00,N,HSR,0,2,1,32,0,2,131,32,Orth Switch 2 TODO
+0x5dde2d00,N,HSR,0,2,1,32,0,2,121,32,Orth Switch 2
+
+0x5dd2f900,N,HSR,0,21,13,2,0,21,13,111,Diag switch 2
+0x5dd31a00,N,HSR,0,0,1,23,0,0,151,23,Diag Switch 1
+0x5dd31b00,N,HSR,1,3,0,0,151,163,0,0,Diag switch -1
+0x5dd32500,N,HSR,0,0,1,3,0,0,1,163,Diag switch -2
+
+0x5ddd0200,S,HSR,0,2,0,2,Road,2,0,2,0,OxO Road
+0x5ddd0100,N,HSR,0,2,0,2,Road,0,0,1,3,OxD Road
+0x5ddd0800,S,HSR,0,2,0,2,Street,2,0,2,0OxO Street
+0x5ddd0300,N,HSR,0,2,0,2,Rail,0,0,1,3,OxD Rail
+0x5ddd0400,S,HSR,0,2,0,2,Rail,2,0,2,0,OxO Rail 
+0x5ddd0500,N,HSR,0,2,0,2,Avenue,0,1,3,0,OxD Ave Outer 
+0x5ddd0600,N,HSR,0,2,0,2,Avenue,3,1,3,1,OxD Ave Inner 
+0x5ddd0700,N,HSR,0,2,0,2,Avenue,2,0,2,4,OxO Ave 
+0x57001925,N,HSR,0,2,0,2,RHW-2,2,0,2,0,OxO RHW-2 
+0x57011925,N,HSR,0,2,0,2,RHW-3,2,0,2,0,OxO RHW-3 
+0x57021925,N,HSR,0,2,0,2,MIS,2,0,2,0,OxO MIS 
+0x57031925,N,HSR,0,2,0,2,RHW-4,2,0,2,0,OxO RHW-4 
+0x57041925,N,HSR,0,2,0,2,RHW-6S,2,0,2,0,OxO RHW-6S 
+0x57051925,N,HSR,0,2,0,2,RHW-8S,2,0,2,0,OxO RHW-8S 
+0x57061925,N,HSR,0,2,0,2,RHW-10S,2,0,2,0,OxO RHW-10S 
+0x570519a5,N,HSR,0,2,0,2,RHW-8S|RHW-10S,2,0,2,0,OxO RHW-8/10S Inner
+0x57081925,N,HSR,0,2,0,2,RHW-6C,2,0,2,0,OxO RHW-6C 
+0x570819a5,N,HSR,0,2,0,2,RHW-6C|RHW-8C,2,0,2,0,OxO RHW-XC Median
+0x57091925,N,HSR,0,2,0,2,RHW-8C,2,0,2,0,OxO RHW-8C 
+0x5ddd0800,S,HSR,0,2,0,2,STR,2,0,2,0,OxO STR  TEMP
+0x5ad00000,S,HSR,0,2,0,2,GroundHighway,2,0,2,4,OxO Maxis Highway 
+0x5ddf1300,N,HSR,0,0,1,3,Avenue,4,2,0,2,DxO Avenue 1
+0x5ddf0c00,N,HSR,0,0,1,3,Street,0,2,0,2,DxO Street 
+0x5ddf1500,N,HSR,0,0,1,3,Avenue,0,2,4,2,DxO Avenue 2
+0x5ddf2310,N,HSR,0,0,1,3,Avenue,3,1,3,1,DxD Avenue Inner
+0x5ddf2300,N,HSR,0,0,1,3,Avenue,0,1,3,0,DxD Avenue Outer
+0x5ddf1200,N,HSR,0,0,1,3,Rail,2,0,2,0,DxO Rail 
+0x5ddf2000,N,HSR,0,0,1,3,Rail,3,0,0,1,DxD Rail 
+0x5ddf0f00,N,HSR,0,0,1,3,Road,2,0,2,0,DxO Road 
+0x5ddf1c00,N,HSR,0,0,1,3,Road,3,0,0,1,DxD Road 
+
+0x5dd1c200,N,HSR,0,2,0,2,0,113,0,2,Road,2,0,2,0,C1xO Road
+0x5dd1c300,N,HSR,0,2,0,2,0,113,0,2,Street,2,0,2,0,C1xO Street
+0x5dd1c400,N,HSR,0,2,0,2,0,113,0,2,Rail,2,0,2,0,C1xO Rail
+
+0x5dd2c100,N,HSR,0,2,0,2,0,113,0,143,S-1:C1
+0x5dd2c200,N,HSR,0,2,0,2,0,113,0,143,Road,2,0,2,0,S-1:C1xO Road
+0x5dd2c300,N,HSR,0,2,0,2,0,113,0,143,Street,2,0,2,0,S-1:C1xO Street
+0x5dd2c400,N,HSR,0,2,0,2,0,113,0,143,Rail,2,0,2,0,S-1:C1xO Rail
+
+0x5dd1e100,N,HSR,0,2,0,2,0,113,0,111,C1:C1(DoubleCurve)
+0x5dd1e100,N,HSR,0,2,0,2,0,113,0,111,Road,2,0,2,0,C1:C1(DoubleCurve)xO Road
+0x5dd1e100,N,HSR,0,2,0,2,0,113,0,111,Street,2,0,2,0,C1:C1(DoubleCurve)xO Street
+0x5dd1e100,N,HSR,0,2,0,2,0,113,0,111,Rail,2,0,2,0,C1:C1(DoubleCurve)xO Rail
+
+0x5dd1d100,N,HSR,0,2,0,2,0,113,0,113,C1:C1(SBend)
+0x5dd1d200,N,HSR,0,2,0,2,0,113,0,113,Road,2,0,2,0,C1:C1(SBend)xO Road
+0x5dd1d300,N,HSR,0,2,0,2,0,113,0,113,Street,2,0,2,0,C1:C1(SBend)xO Street
+0x5dd1d400,N,HSR,0,2,0,2,0,113,0,113,Rail,2,0,2,0,C1:C1(SBend)xO Rail
+
+0x5dd18c00,N,HSR,1,3,0,0,121,133,0,0,Road,0,2,0,2,C4xO Road
+0x5dd18d00,N,HSR,1,3,0,0,121,133,0,0,Street,0,2,0,2,C4xO Street
+0x5dd18e00,N,HSR,1,3,0,0,121,133,0,0,Rail,0,2,0,2,C4xO Rail
+
+0x5dd19600,N,HSR,0,0,1,3,0,0,1,133,Road,0,2,0,2,C5xO Road
+0x5dd19700,N,HSR,0,0,1,3,0,0,1,133,Street,0,2,0,2,C5xO Street
+0x5dd19800,N,HSR,0,0,1,3,0,0,1,133,Rail,0,2,0,2,C5xO Rail
 
 [BasePieces]
 ;For pieces that need to be overridden but are not maxis pieces (e.g. RHW x Monorail, except RHW-2/ANT)
+
+[FlagRemapping]
+;WNES,WNES=WNES,WNES
+;The flags must be override flags
+;This is closer to RUL2s, but means network2 can figured out. 
+;Eg in the HSR S bend with a gap of 1 tile, the 2 neighbouring C4 pieces
+;can be changed to S bend pieces. 
+;The advantages of this over RUL2 is no need for rotation or flip
+;and overpasses pieces only need to be declared, and not RULed
+

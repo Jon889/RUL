@@ -91,28 +91,81 @@ void piece_printAsciiArtPair(Piece *piece, int rotation1, Piece *p2, int rotatio
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
-
+bool print = false;
+bool pieceRotation_matches(PieceRotation *pr, NetworkFlags *flags, NetworkFlags *n2flags, int *overrideMatchCount) {
+    *overrideMatchCount = 0;
+    //each flag must match either the override or base flag
+    if (print) networkFlags_print(pr->network1);
+    if (print) printf("\n");
+    if (print) networkFlags_print(flags);
+    if (print) printf("\n0\n");
+    if (networkFlag_matches(pr->override1->west, flags->west, true)) {
+        (*overrideMatchCount)++;
+    } else if (!networkFlag_matches(pr->network1->west, flags->west, true)) {
+        if (print) printf("W pr: %i f: %i\n", pr->network1->west, flags->west);
+        return false;
+    }
+    if (print) printf("1\n");
+    if (networkFlag_matches(pr->override1->north, flags->north, true)) {
+        (*overrideMatchCount)++;
+    } else if (!networkFlag_matches(pr->network1->north, flags->north, true)) {
+        if (print) printf("N pr: %i f: %i\n", pr->network1->north, flags->north);
+        return false;
+    }
+    if (print) printf("2\n");
+    if (networkFlag_matches(pr->override1->east, flags->east, true)) {
+        (*overrideMatchCount)++;
+    } else if (!networkFlag_matches(pr->network1->east, flags->east, true)) {
+        if (print) printf("E pr: %i f: %i\n", pr->network1->east, flags->east);
+        return false;
+    }
+    if (print) printf("3\n");
+    if (networkFlag_matches(pr->override1->south, flags->south, true)) {
+        (*overrideMatchCount)++;
+    } else if (!networkFlag_matches(pr->network1->south, flags->south, true)) {
+        if (print) printf("S pr: %i f: %i\n", pr->network1->south, flags->south);
+        return false;
+    }
+    if (print) printf("4\n");
+    //network1/override1 is a match
+    return networkFlags_equal(pr->network2, n2flags);
+    
+}
+bool network2NamesCompatible(char *names1[10], char *names2[10]) {
+    if (names1[0] == NULL && names2[0] == NULL) {
+        return true;
+    }
+    if (names1[0] == NULL || names2[0] == NULL) {
+        return false;
+    }
+    return strcmp(names1[0], names2[0]) == 0;
+}
 Piece *list_findPieceWithNetworkFlags(List *list, char *n1name, NetworkFlags *n1flags, char *n2names[10], NetworkFlags *n2flags, Rotation *rot) {
     Piece *piece = NULL;
+    Piece *bestPiece = NULL;
+    int bestMatchCount = 0;
+    int bestRot = 0;
     for (each_in_list(list, piece)) {
         if (strcmp(piece->network1Name, n1name) == 0) {
             for (int i = 0; i < (piece->simple ? 4 : 8); i++) {
-                if (networkFlags_equal(n1flags, piece->rotations[i]->network1)) {
-                    if ((n2names[0] == NULL && piece->network2Names[0] == NULL)) {
-                        *rot = i;
-                        return piece;
-                    } else if ((n2names[0] != NULL && piece->network2Names[0] != NULL)) {
-                        if ((networkFlags_equal(n2flags, piece->rotations[i]->network2)
-                             && strcmp(n2names[0], piece->network2Names[0]) == 0)) {
-                            *rot = i;
-                            return piece;
-                        }
+                int matchCount = 0;
+//                print = piece->textureIID == 0x5dd01a00;
+                if (print) printf("trying 0x5dd31500 %i\n", i);
+                if (pieceRotation_matches(piece->rotations[i], n1flags, n2flags, &matchCount)
+                    && network2NamesCompatible(n2names, piece->network2Names)) {
+                    if (matchCount > bestMatchCount) {
+                        bestRot = i;
+                        bestPiece = piece;
+                        bestMatchCount = matchCount;
                     }
                 }
             }
         }
     }
-    return NULL;
+    if (bestPiece != NULL) {
+        *rot = bestRot;
+    }
+    return bestPiece;
 }
 
 Piece * piece_createEmpty(void) {
