@@ -1,0 +1,7 @@
+open /Volumes/C/Users/jonathan/Desktop/killsc4.bat
+open /Applications/Utilities/Terminal.app
+make &&
+./RUL hsr2.txt ruls > /Volumes/C/Users/jonathan/Documents/SimCity\ 4/NAM\ Auxiliary\ Files/Tools/Controller\ Compiler/Network\ Addon\ Mod/Controller/RUL2/12_HSRP/Sec12_HSRP.txt &&
+cd "/Volumes/C/Users/jonathan/Documents/SimCity 4/NAM Auxiliary Files/Tools/Controller Compiler" &&
+eval "$(printf "java -jar NAMControllerCompiler.jar "; sed 's/\ /\\\\ /g' "resources/NAMControllerCompilerSettings.txt" | xargs echo)" &&
+open /Volumes/C/Users/jonathan/Desktop/sc4.bat
