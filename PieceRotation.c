@@ -87,7 +87,7 @@ bool pieceRotation_fitsLeftOfPieceRotation(PieceRotation *pr, PieceRotation *pr2
     if (networkFlag_matches(pr->network1->east, pr2->network1->west, false)) {
         if ((!pieceRotation_hasNetwork2(pr) && !pieceRotation_hasNetwork2(pr2))
             || ((pieceRotation_hasNetwork2(pr) && pieceRotation_hasNetwork2(pr2)
-                && networkFlag_matches(pr->network2->east, pr2->network2->west, true))) {
+                && networkFlag_matches(pr->network2->east, pr2->network2->west, true)))) {
             //C4|C4
 //            if (pr2->override1->west != pr2->network1->west
 //                && pr->override1->east != pr2->override1->west) {
