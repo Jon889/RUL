@@ -35,9 +35,36 @@ char * seekAfter(char **str, char chr) {
 }
 bool parseInstanceID(char *str, InstanceID *iid, int *rotationIdx);
 
+bool lineIsSpace(char *str) {
+    while (*str != '\0') {
+        if (!isspace(*str++)) {
+            return false;
+        }
+    }
+    return true;
+}
+char * str_dup(char *str) {
+    char *newString = calloc(strlen(str) + 1, sizeof(char));
+    strcpy(newString, str);
+    return newString;
+}
 
+int countChar(char *str, char chr) {
+    int count = 0;
+    while (*str != '\0') {
+        if (*str++ == chr) {
+            count++;
+        }
+    }
+    return count;
+}
 
-
+typedef struct {
+    List *pieceList;
+    List *basePieceList;
+    List *ignoreList;
+    List *flagRemapList;
+} Repository;
 
 Piece * list_pieceWithTextureID(List *list, InstanceID textureID) {
     Piece *piece = NULL;
@@ -50,7 +77,18 @@ Piece * list_pieceWithTextureID(List *list, InstanceID textureID) {
 }
 
 
-char * str_dup(char *str);
+void list_map(List *list, void (*fn)(void *)) {
+    void *value = NULL;
+    for (each_in_list(list, value)) {
+        fn(value);
+    }
+}
+
+void piece_print(Piece *piece) {
+    printf("0x%08x %s %s\n", piece->textureIID, piece->network1Name, piece->network2Names[0]);
+}
+
+
 
 void readRUL(char *path, List *list) {
     FILE *fp = fopen(path , "r");
@@ -95,26 +133,12 @@ void readRUL(char *path, List *list) {
 }
 
 
-char * str_dup(char *str) {
-    char *newString = calloc(strlen(str) + 1, sizeof(char));
-    strcpy(newString, str);
-    return newString;
-}
 
-int countChar(char *str, char chr) {
-    int count = 0;
-    while (*str != '\0') {
-        if (*str++ == chr) {
-            count++;
-        }
-    }
-    return count;
-}
-#define READ_FLAGS(nf) nf.west = strtol(strtok(NULL, ","), NULL, 10);\
-nf.north = strtol(strtok(NULL, ","), NULL, 10);\
-nf.east = strtol(strtok(NULL, ","), NULL, 10);\
-nf.south = strtol(strtok(NULL, ","), NULL, 10);
-bool readPiece(char *str, List *list) {
+#define READ_FLAGS(nf, initial, finaldelim) (nf).west = strtol(strtok(initial, ","), NULL, 10);\
+(nf).north = strtol(strtok(NULL, ","), NULL, 10);\
+(nf).east = strtol(strtok(NULL, ","), NULL, 10);\
+(nf).south = strtol(strtok(NULL, finaldelim), NULL, 10);
+bool readPiece(char *str, Repository *repo) {
     /*
      ;IID,simple,n1name,w1,n1,e1,s1,ow1,on1,oe1,os1,piece name(12)
      ;IID,simple,n1name,w1,n1,e1,s1,piece name(8)
@@ -138,16 +162,16 @@ bool readPiece(char *str, List *list) {
     bool simple = strcmp(strtok(NULL,  ","), "S") == 0;
     char *n1Name = strtok(NULL, ",");
     NetworkFlags n1;
-    READ_FLAGS(n1);
+    READ_FLAGS(n1, NULL, ",");
     NetworkFlags o1;
     if (hasOverrideFlags) {
-        READ_FLAGS(o1);
+        READ_FLAGS(o1, NULL, ",");
     }
     char *n2name;
     NetworkFlags n2;
     if (isDualPiece) {
         n2name = strtok(NULL, ",");
-        READ_FLAGS(n2);
+        READ_FLAGS(n2, NULL, ",");
     }
     char *name = strtok(NULL, ",");
     while (isspace(name[strlen(name) - 1])) {
@@ -170,37 +194,107 @@ bool readPiece(char *str, List *list) {
         pieceRotation_addNetwork2_s(baseRotation, n2);
     }
     piece_fillRotationsFromBase(newPiece, baseRotation);
-    list_addValue(list, newPiece);
-    return true;
-}
-bool lineIsSpace(char *str) {
-    while (*str != '\0') {
-        if (!isspace(*str++)) {
-            return false;
-        }
-    }
-    return true;
-}
-bool readFalseIntersection(char *str, List *ignoreList) {
-    InstanceID *iid = calloc(1, sizeof(InstanceID));
-    if (parseInstanceID(str, iid, NULL)) {
-        list_addValue(ignoreList, iid);
-    }
+    list_addValue(repo->pieceList, newPiece);
     return true;
 }
 
+bool readFalseIntersection(char *str, Repository *repo) {
+    InstanceID *iid = calloc(1, sizeof(InstanceID));
+    if (parseInstanceID(str, iid, NULL)) {
+        list_addValue(repo->ignoreList, iid);
+    }
+    return true;
+}
+struct BasePieceHolder {
+    InstanceID newIID;
+    InstanceID oldIID;
+    char *n1Name;
+    char *n2Names[10];
+};
+bool readBasePiece(char *str, Repository *repo) {
+    struct BasePieceHolder *holder = calloc(1, sizeof(struct BasePieceHolder));
+    holder->newIID = strtol(strtok(str, ","), NULL, 16);
+    holder->oldIID = strtol(strtok(NULL, ","), NULL, 16);
+    holder->n1Name = str_dup(strtok(NULL, ","));
+    int i = 0;
+    char *n2Name = strtok(NULL, "|");
+    while (n2Name != NULL) {
+        holder->n2Names[i++] = str_dup(n2Name);
+        n2Name = strtok(NULL, "|");
+    }
+    list_addValue(repo->basePieceList, holder);
+    return true;
+}
+typedef struct {
+    NetworkFlags *leftFlags[8];
+    NetworkFlags *rightFlags[8];
+    NetworkFlags *leftOverrideFlags[8];
+    NetworkFlags *rightOverrideFlags[8];
+} FlagRemapping;
+
+void fillFlagsArray(NetworkFlags *(*flags)[8]) {
+    for (int i = 1; i <= 3; i++) {
+        (*flags)[i] = networkFlags_clone((*flags)[i - 1]);
+        networkFlags_rotate90C((*flags)[i]);
+    }
+    
+    for (int i = 4; i <= 7; i++) {
+        (*flags)[i] = networkFlags_clone((*flags)[i - 4]);
+        networkFlags_mirror((*flags)[i]);
+    }
+
+}
+
+bool readFlagRemapping(char *str, Repository *repo) {
+    FlagRemapping *remap = calloc(1, sizeof(FlagRemapping));
+    
+    remap->leftFlags[0] = networkFlags_create(0,0,0,0);
+    remap->rightFlags[0] = networkFlags_create(0,0,0,0);
+    remap->leftOverrideFlags[0] = networkFlags_create(0,0,0,0);
+    remap->rightOverrideFlags[0] = networkFlags_create(0,0,0,0);
+    
+    READ_FLAGS(*(remap->leftFlags[0]), str, ",");
+    READ_FLAGS(*(remap->rightFlags[0]), NULL, "=");
+    READ_FLAGS(*(remap->leftOverrideFlags[0]), NULL, ",");
+    READ_FLAGS(*(remap->rightOverrideFlags[0]), NULL, ",");
+    
+    fillFlagsArray(&remap->leftFlags);
+    fillFlagsArray(&remap->rightFlags);
+    fillFlagsArray(&remap->leftOverrideFlags);
+    fillFlagsArray(&remap->rightOverrideFlags);
+
+    list_addValue(repo->flagRemapList, remap);
+    return true;
+}
+
+
 typedef enum {
-    NoSection,
     OverridePieceSection,
     BasePieceSection,
-    FalseIntersectionSection
+    FalseIntersectionSection,
+    FlagRemappingSection,
+    NoSection
 } MapSection;
-void readMap(char *path, List *pieceList, List *ignoreList) {
+const int NumberOfSections = 4;
+
+void readMap(char *path, Repository *repo) {// List *pieceList, List *ignoreList, List *basePieceList) {
     FILE *fp = fopen(path , "r");
     if (fp == NULL) {
         fprintf(stderr, ANSI_BOLD ANSI_COLOR_RED "Error: unable to open file %s\n" ANSI_COLOR_RESET, path);
         exit(1);
     }
+    
+    char * sectionNames[NumberOfSections];
+    bool (*sectionFunctions[NumberOfSections])(char *, Repository *);
+    sectionFunctions[OverridePieceSection] = &readPiece;
+    sectionNames[OverridePieceSection] = "[OverridePieces]";
+    sectionFunctions[BasePieceSection] = &readBasePiece;
+    sectionNames[BasePieceSection] = "[BasePieces]";
+    sectionFunctions[FalseIntersectionSection] = &readFalseIntersection;
+    sectionNames[FalseIntersectionSection] = "[FalseIntersections]";
+    sectionFunctions[FlagRemappingSection] = &readFlagRemapping;
+    sectionNames[FlagRemappingSection] = "[FlagRemapping]";
+    
     char str[600];
     MapSection currentSection = NoSection;
     int line = 0;
@@ -209,34 +303,18 @@ void readMap(char *path, List *pieceList, List *ignoreList) {
         if (lineIsSpace(str)
             || str[0] == ';') {
         } else if (str[0] == '[') {
-            char *opStr = "[OverridePieces]";
-            char *bpStr = "[BasePieces]";
-            char *fiStr = "[FalseIntersections]";
-            if (strncmp(str, opStr, strlen(opStr)) == 0) {
-                currentSection = OverridePieceSection;
-            } else if (strncmp(str, bpStr, strlen(bpStr)) == 0) {
-                currentSection = BasePieceSection;
-            } else if (strncmp(str, fiStr, strlen(fiStr)) == 0) {
-                currentSection = FalseIntersectionSection;
-            } else {
-                currentSection = NoSection;
+            currentSection = NoSection;
+            for (MapSection i = 0; i < NumberOfSections; i++) {
+                if (strncmp(str, sectionNames[i], strlen(sectionNames[i])) == 0) {
+                    currentSection = i;
+                }
+            }
+            if (currentSection == NoSection) {
                 fprintf(stderr, ANSI_BOLD "%s:%i: " ANSI_COLOR_PURPLE "Warning:" ANSI_COLOR_RESET ANSI_BOLD " unknown section %s" ANSI_COLOR_RESET, path, line, str);
             }
         } else {
             int errorLen = fprintf(stderr, ANSI_BOLD "%s:%i: " ANSI_COLOR_RED "Error: " ANSI_COLOR_RESET ANSI_BOLD, path, line);
-            switch (currentSection) {
-                case FalseIntersectionSection:
-                    readFalseIntersection(str, ignoreList);
-                    break;
-                case BasePieceSection:
-
-                    break;
-                case OverridePieceSection:
-                    readPiece(str, pieceList);
-                    break;
-                case NoSection:
-                    break;
-            }
+            sectionFunctions[currentSection](str, repo);
             fprintf(stderr, ANSI_COLOR_RESET "\r%*s\r", errorLen, "");
         }
     }
@@ -250,7 +328,7 @@ NetworkFlag intersectionFlags(char **str) {
     return strtol(flagStr, NULL, 10);
 }
 
-void readIntersections(char *path, char *networkName, List *list, List *ignoreList) {
+void readIntersections(char *path, char *networkName, Repository *repo) {// List *list, List *ignoreList) {
     FILE *fp = fopen(path , "r");
     if (fp == NULL) {
         perror("Error opening file");
@@ -303,7 +381,7 @@ void readIntersections(char *path, char *networkName, List *list, List *ignoreLi
                 InstanceID textureIID = strtol(seekAfter(&line, ','), NULL, 16);
                 InstanceID *iid;
                 bool ignore = false;
-                for (each_in_list(ignoreList, iid)) {
+                for (each_in_list(repo->ignoreList, iid)) {
                     if (*iid == textureIID) {
                         ignore = true;
                     }
@@ -325,7 +403,7 @@ void readIntersections(char *path, char *networkName, List *list, List *ignoreLi
                         pieceRotation_addNetwork2(rot0, other.west,other.north,other.east,other.south);
                         piece_fillRotationsFromBase(testPiece, rot0);
                         
-                        list_addValue(list, testPiece);
+                        list_addValue(repo->pieceList, testPiece);
                     }
                 }
             }
@@ -337,16 +415,6 @@ void readIntersections(char *path, char *networkName, List *list, List *ignoreLi
     
 }
 
-void list_map(List *list, void (*fn)(void *)) {
-    void *value = NULL;
-    for (each_in_list(list, value)) {
-        fn(value);
-    }
-}
-
-void piece_print(Piece *piece) {
-    printf("0x%08x %s %s\n", piece->textureIID, piece->network1Name, piece->network2Names[0]);
-}
 
 bool parseRotation(char *str, Rotation *rotation) {
     if (str == NULL) {
@@ -376,10 +444,28 @@ bool parseFlip(char *str, Flip *flip) {
 }
 
 
-
+void remapFlags(List *remapList, NetworkFlags *leftFlags, NetworkFlags *rightFlags) {
+    FlagRemapping *remap = NULL;
+    for (each_in_list(remapList, remap)) {
+        for (int i = 0; i < 8; i++) {
+            if (networkFlags_equal(leftFlags, remap->leftFlags[i])
+                && networkFlags_equal(rightFlags, remap->rightFlags[i])) {
+                rightFlags->west = remap->rightOverrideFlags[i]->west;
+                rightFlags->north = remap->rightOverrideFlags[i]->north;
+                rightFlags->east = remap->rightOverrideFlags[i]->east;
+                rightFlags->south = remap->rightOverrideFlags[i]->south;
+                leftFlags->west = remap->leftOverrideFlags[i]->west;
+                leftFlags->north = remap->leftOverrideFlags[i]->north;
+                leftFlags->east = remap->leftOverrideFlags[i]->east;
+                leftFlags->south = remap->leftOverrideFlags[i]->south;
+            }
+        }
+    }
+}
 
 //Piece *list_findPieceWithNetworkFlags(List *list, char *n1name, NetworkFlags *n1flags, char *n2names[10], NetworkFlags *n2flags, Rotation *rot);
-int attemptRULsForPieces(List *list, Piece *leftPiece, Piece *rightPiece) {
+int attemptRULsForPieces(Repository *repo, Piece *leftPiece, Piece *rightPiece, bool printMissing) {
+    List *list = repo->pieceList;
     int count = 0;
     for (int left = 0; left < (leftPiece->simple ? 4 : 8); left++) {
         for (int right = 0; right < (rightPiece->simple ? 4 : 8); right++) {
@@ -387,21 +473,46 @@ int attemptRULsForPieces(List *list, Piece *leftPiece, Piece *rightPiece) {
             if (pieceRotation_fitsLeftOfPieceRotation(leftPiece->rotations[left], rightRotation)) {
                 Rotation rot;
                 NetworkFlags desiredFlags = *rightRotation->override1;
-                desiredFlags.west = leftPiece->rotations[left]->override1->east;
+                NetworkFlags leftFlags = *leftPiece->rotations[left]->override1;
+                remapFlags(repo->flagRemapList, &leftFlags, &desiredFlags);
+                desiredFlags.west = leftFlags.east;
                 Piece *rightOverridePiece = list_findPieceWithNetworkFlags(list, "HSR", &desiredFlags, rightPiece->network2Names, rightRotation->network2, &rot);
+                //this adds extra RULs that are strictly unneccessary.
+                //as the ruls generated by this if statement don't form a fluid network
+                //however it seems better to have a jagedy HSR section that monorail next to hsr.
+//                if (rightOverridePiece == NULL) {
+//                    desiredFlags.west = leftPiece->rotations[left]->network1->east;
+//                    rightOverridePiece = list_findPieceWithNetworkFlags(list, "HSR", &desiredFlags, rightPiece->network2Names, rightRotation->network2, &rot);
+//                }
                 if (rightOverridePiece == NULL) {
-                    desiredFlags.west = leftPiece->rotations[left]->network1->east;
-                    rightOverridePiece = list_findPieceWithNetworkFlags(list, "HSR", &desiredFlags, rightPiece->network2Names, rightRotation->network2, &rot);
-                }
-                if (rightOverridePiece == NULL) {
-//                    printf(";missing piece 0x%08x | 0x%08x -> ", leftPiece->textureIID, rightPiece->textureIID);
-//                    networkFlags_print(rightRotation->network1);
-//                    printf(" n2: ");
-//                    networkFlags_print(rightRotation->network2);
-//                    printf("\n");
+                    if (printMissing) {
+                        printf(";missing piece 0x%08x | 0x%08x -> ", leftPiece->textureIID, rightPiece->textureIID);
+                        networkFlags_print(rightRotation->network1);
+                        printf(" n2: ");
+                        networkFlags_print(rightRotation->network2);
+                        printf("\n");
+//                        printf(";");
+//                        networkFlags_print(leftPiece->rotations[left]->override1);
+//                        printf(",");
+//                        networkFlags_print(rightPiece->rotations[right]->override1);
+//                        printf("=");
+//                        networkFlags_print(leftPiece->rotations[left]->override1);
+//                        printf(",");
+//                        networkFlags_print(&desiredFlags);
+//                        printf("\n\n");
+                    }
                 } else {
                     if (piece_printRUL(leftPiece, left, rightPiece, right, leftPiece, left, rightOverridePiece, rot)) {
                         printf("\n");
+//                        printf(";");
+//                        networkFlags_print(leftPiece->rotations[left]->override1);
+//                        printf(",");
+//                        networkFlags_print(rightPiece->rotations[right]->override1);
+//                        printf("=");
+//                        networkFlags_print(leftPiece->rotations[left]->override1);
+//                        printf(",");
+//                        networkFlags_print(rightOverridePiece->rotations[rot]->override1);
+//                        printf("\n\n");
                         count++;
                     }
                 }
@@ -435,19 +546,40 @@ bool parseInstanceID(char *str, InstanceID *iid, int *rotationIdx) {
 }
 
 int main(int argc, char **argv) {
-    assert(argc >= 2);
-    List *list = list_create();
-    List *ignoreList = list_create();
-    readRUL("/Users/jonathan/Desktop/file_dec00000000.rul", list);
-    readMap(argv[1], list, ignoreList);
-    readIntersections("/Users/jonathan/Desktop/file_dec00000002.rul", NULL, list, ignoreList);
+    const int commandIdx = 2;
+    const int paramCount = argc - commandIdx - 1;
+    
+    assert(argc >= commandIdx);
+    Repository *repo = calloc(1, sizeof(Repository));
+    repo->pieceList = list_create();
+    repo->ignoreList = list_create();
+    repo->basePieceList = list_create();
+    repo->flagRemapList = list_create();
+    
+    readRUL("/Users/jonathan/Desktop/file_dec00000000.rul", repo->pieceList);
+    readMap(argv[1], repo);
+    readIntersections("/Users/jonathan/Desktop/file_dec00000002.rul", NULL, repo);
+
+    struct BasePieceHolder *holder = NULL;
+    for (each_in_list(repo->basePieceList, holder)) {
+        Piece *oldPiece = list_pieceWithTextureID(repo->pieceList, holder->oldIID);
+        Piece *newPiece = piece_clone(oldPiece);
+        newPiece->textureIID = holder->newIID;
+        newPiece->network1Name = holder->n1Name;
+        for (int i = 0; i < 10; i++) {
+            newPiece->network2Names[i] = holder->n2Names[i];
+        }
+        list_addValue(repo->pieceList, newPiece);
+    }
 
     
-
-    if (argc >= 3) {
-        int commandIdx = 2;
+    //needs to be replaced:
+    List *list = repo->pieceList;
+    
+    //should probably split into seperate functions
+    if (argc >= commandIdx + 1) {
         if (strcmp(argv[commandIdx], "print") == 0) {
-            if (argc == 4) {//RUL map.txt print IID[,r,f]
+            if (paramCount == 1) {//RUL map.txt print IID[,r,f]
                 int rot = -1;
                 InstanceID iid;
                 if (!parseInstanceID(argv[commandIdx + 1], &iid, &rot)) {
@@ -467,7 +599,7 @@ int main(int argc, char **argv) {
                     piece_printAsciiArt(piece, rot);
                 }
                 return 0;
-            } else if (argc == 5) {//RUL map.txt print IID[,r,f] IID[r,f]
+            } else if (paramCount == 2) {//RUL map.txt print IID[,r,f] IID[r,f]
                 int leftRot = -1;
                 InstanceID leftIID;
                 if (!parseInstanceID(argv[commandIdx + 1], &leftIID, &leftRot)) {
@@ -502,7 +634,7 @@ int main(int argc, char **argv) {
             }
         } else if (strcmp(argv[commandIdx], "find") == 0) {
             //find n1name W N E S [n2name W N E S]
-            if (argc >= 8) {
+            if (paramCount >= 5) {
                 char *n1name = argv[commandIdx + 1];
                 NetworkFlags n1;
                 n1.west = strtol(argv[commandIdx + 2], NULL, 10);
@@ -511,7 +643,7 @@ int main(int argc, char **argv) {
                 n1.south = strtol(argv[commandIdx + 5], NULL, 10);
                 NetworkFlags n2;
                 char *n2names[10];
-                if (argc == 13) {
+                if (paramCount == 10) {
                     n2names[0] = argv[commandIdx + 6];
                     n2.west = strtol(argv[commandIdx + 7], NULL, 10);
                     n2.north = strtol(argv[commandIdx + 8], NULL, 10);
@@ -532,19 +664,19 @@ int main(int argc, char **argv) {
             list_map(list, (void (*)(void *))&piece_print);
             return 0;
         } else if (strcmp(argv[commandIdx], "ruls") == 0) {
-            if (argc == 3) {
+            if (paramCount == 0) {
                 int totalRulsPrinted = 0;
                 Piece *leftPiece = NULL;
                 for (each_in_list(list, leftPiece)) {
                     if (strcmp(leftPiece->network1Name, "HSR") == 0) {
                         Piece *rightPiece = NULL;
                         for (each_in_list(list, rightPiece)) {
-                            totalRulsPrinted += attemptRULsForPieces(list, leftPiece, rightPiece);
+                            totalRulsPrinted += attemptRULsForPieces(repo, leftPiece, rightPiece, false);
                         }
                     }
                 }
                 fprintf(stderr, ";%i RULs generated\n", totalRulsPrinted);
-            } else if (argc == 4 || argc == 5) {
+            } else if (paramCount == 1 || paramCount == 2) {
                 InstanceID leftIID;
                 if (parseInstanceID(argv[commandIdx + 1], &leftIID, NULL)) {
                     Piece *leftPiece = list_pieceWithTextureID(list, leftIID);
@@ -556,17 +688,16 @@ int main(int argc, char **argv) {
                         InstanceID rightIID;
                         if (parseInstanceID(argv[commandIdx + 2], &rightIID, NULL)) {
                             Piece *rightPiece = list_pieceWithTextureID(list, rightIID);
-                            attemptRULsForPieces(list, leftPiece, rightPiece);
+                            attemptRULsForPieces(repo, leftPiece, rightPiece, true);
                         }
                     } else {
                         Piece *rightPiece = NULL;
                         for (each_in_list(list, rightPiece)) {
-                            attemptRULsForPieces(list, leftPiece, rightPiece);
+                            attemptRULsForPieces(repo, leftPiece, rightPiece, true);
                         }
                     }
                     return 0;
                 }
-                
             }
         }
     }

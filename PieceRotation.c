@@ -35,6 +35,7 @@ void pieceRotation_addOverride1_s(PieceRotation *pr, NetworkFlags nf) {
 void pieceRotation_destroy(PieceRotation *pr) {
     networkFlags_destroy(pr->network1);
     networkFlags_destroy(pr->network2);
+    networkFlags_destroy(pr->override1);
     free(pr);
 }
 PieceRotation * pieceRotation_clone(PieceRotation *pr) {
@@ -75,13 +76,23 @@ PieceRotation * pieceRotation_mirror(PieceRotation *pr) {
     return pr;
 }
 
+bool pieceRotation_hasNetwork2(PieceRotation *pr) {
+    return (pr->network2->west == 0
+            && pr->network2->north == 0
+            && pr->network2->east == 0
+            && pr->network2->south == 0);
+}
 
 bool pieceRotation_fitsLeftOfPieceRotation(PieceRotation *pr, PieceRotation *pr2) {
     if (networkFlag_matches(pr->network1->east, pr2->network1->west, false)) {
-        if (pr->network2 == NULL && pr2->network2 == NULL) {
-            return true;
-        } else if (pr->network2 != NULL && pr2->network2 != NULL
-                   && networkFlag_matches(pr->network2->east, pr2->network2->west, true)) {
+        if ((!pieceRotation_hasNetwork2(pr) && !pieceRotation_hasNetwork2(pr2))
+            || ((pieceRotation_hasNetwork2(pr) && pieceRotation_hasNetwork2(pr2)
+                && networkFlag_matches(pr->network2->east, pr2->network2->west, true))) {
+            //C4|C4
+//            if (pr2->override1->west != pr2->network1->west
+//                && pr->override1->east != pr2->override1->west) {
+//                return false;
+//            }
             return true;
         }
     }
@@ -89,7 +100,7 @@ bool pieceRotation_fitsLeftOfPieceRotation(PieceRotation *pr, PieceRotation *pr2
 }
 void pieceRotation_print(PieceRotation *pr) {
     printf("Network 1: %02i %02i %02i %02i\n", pr->network1->west, pr->network1->north, pr->network1->east, pr->network1->south);
-    if (pr->network2 != NULL) {
+    if (pieceRotation_hasNetwork2(pr)) {
         printf("Network 2: %02i %02i %02i %02i\n", pr->network2->west, pr->network2->north, pr->network2->east, pr->network2->south);
     }
     printf("Rotation: %i, Flip: %i\n", pr->transformation.rotation, pr->transformation.flip);

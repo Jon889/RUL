@@ -10,40 +10,38 @@ NetworkFlags * networkFlags_create(NetworkFlag west, NetworkFlag north, NetworkF
     flags->south = south;
     return flags;
 }
+NetworkFlags *networkFlags_clone(NetworkFlags *flags) {
+    return networkFlags_create(flags->west, flags->north, flags->east, flags->south);
+}
+void networkFlags_copy(NetworkFlags *dest, NetworkFlags *src) {
+    dest->west = src->west;
+    dest->north = src->north;
+    dest->east = src->east;
+    dest->south = src->south;
+}
 void networkFlags_destroy(NetworkFlags *nf) {
     free(nf);
 }
-void mirrorLRFlipper(NetworkFlag *flag) {
+void networkFlag_mirror(NetworkFlag *flag) {
+    
     switch (*flag) {
         case 1:
-            *flag = 3;
+        case 11:
+        case 21:
+            *flag += 2;
             break;
         case 3:
-            *flag = 1;
-            break;
-        case 11:
-            *flag = 13;
-            break;
         case 13:
-            *flag = 11;
-            break;
-        case 52:
-            *flag = 32;
-            break;
-        case 32:
-            *flag = 52;
-            break;
         case 23:
-            *flag = 21;
-            break;
-        case 21:
-            *flag = 23;
-            break;
-        case 42:
-            *flag = 22;
+            *flag -= 2;
             break;
         case 22:
-            *flag = 42;
+        case 32:
+            *flag += 20;
+            break;
+        case 42:
+        case 52:
+            *flag -= 20;
             break;
     }
     if (*flag > 100) {
@@ -59,10 +57,10 @@ void networkFlags_mirror(NetworkFlags *piece) {
     NetworkFlag oldWest = piece->west;
     piece->west = piece->east;
     piece->east = oldWest;
-    mirrorLRFlipper(&piece->west);
-    mirrorLRFlipper(&piece->north);
-    mirrorLRFlipper(&piece->east);
-    mirrorLRFlipper(&piece->south);
+    networkFlag_mirror(&piece->west);
+    networkFlag_mirror(&piece->north);
+    networkFlag_mirror(&piece->east);
+    networkFlag_mirror(&piece->south);
 }
 
 void networkFlags_rotate90MC(NetworkFlags *piece) {

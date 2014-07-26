@@ -91,42 +91,29 @@ void piece_printAsciiArtPair(Piece *piece, int rotation1, Piece *p2, int rotatio
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
-bool print = false;
 bool pieceRotation_matches(PieceRotation *pr, NetworkFlags *flags, NetworkFlags *n2flags, int *overrideMatchCount) {
     *overrideMatchCount = 0;
     //each flag must match either the override or base flag
-    if (print) networkFlags_print(pr->network1);
-    if (print) printf("\n");
-    if (print) networkFlags_print(flags);
-    if (print) printf("\n0\n");
     if (networkFlag_matches(pr->override1->west, flags->west, true)) {
         (*overrideMatchCount)++;
     } else if (!networkFlag_matches(pr->network1->west, flags->west, true)) {
-        if (print) printf("W pr: %i f: %i\n", pr->network1->west, flags->west);
         return false;
     }
-    if (print) printf("1\n");
     if (networkFlag_matches(pr->override1->north, flags->north, true)) {
         (*overrideMatchCount)++;
     } else if (!networkFlag_matches(pr->network1->north, flags->north, true)) {
-        if (print) printf("N pr: %i f: %i\n", pr->network1->north, flags->north);
         return false;
     }
-    if (print) printf("2\n");
     if (networkFlag_matches(pr->override1->east, flags->east, true)) {
         (*overrideMatchCount)++;
     } else if (!networkFlag_matches(pr->network1->east, flags->east, true)) {
-        if (print) printf("E pr: %i f: %i\n", pr->network1->east, flags->east);
         return false;
     }
-    if (print) printf("3\n");
     if (networkFlag_matches(pr->override1->south, flags->south, true)) {
         (*overrideMatchCount)++;
     } else if (!networkFlag_matches(pr->network1->south, flags->south, true)) {
-        if (print) printf("S pr: %i f: %i\n", pr->network1->south, flags->south);
         return false;
     }
-    if (print) printf("4\n");
     //network1/override1 is a match
     return networkFlags_equal(pr->network2, n2flags);
     
@@ -149,8 +136,6 @@ Piece *list_findPieceWithNetworkFlags(List *list, char *n1name, NetworkFlags *n1
         if (strcmp(piece->network1Name, n1name) == 0) {
             for (int i = 0; i < (piece->simple ? 4 : 8); i++) {
                 int matchCount = 0;
-//                print = piece->textureIID == 0x5dd01a00;
-                if (print) printf("trying 0x5dd31500 %i\n", i);
                 if (pieceRotation_matches(piece->rotations[i], n1flags, n2flags, &matchCount)
                     && network2NamesCompatible(n2names, piece->network2Names)) {
                     if (matchCount > bestMatchCount) {
@@ -178,13 +163,6 @@ Piece * piece_create(InstanceID tid, char *name, bool simple) {
     p->simple = simple;
     p->network1Name = NULL;
     return p;
-}
-Piece * piece_createPrevent(void) {
-    Piece *np = piece_createEmpty();
-    for (int i = 0; i < 8; i++) {
-        np->rotations[i] = pieceRotation_create(0,0,0,0,0,0);
-    }
-    return np;
 }
 
 void piece_destroy(Piece *piece) {
@@ -220,22 +198,14 @@ void piece_fillRotationsFromBase(Piece *piece, PieceRotation *baseRotation) {
     PieceRotation *t;
     int ma = baseRotation->transformation.flip == 1 ? 4 : 0; //mirror adjustment;
     piece->rotations[rot + ma] = pieceRotation_clone(baseRotation);
-    
-    t = pieceRotation_rotate90C(pieceRotation_clone(piece->rotations[rot + ma]));
-    piece->rotations[rotation_next90C(&rot) + ma] = t;
-
-    t = pieceRotation_rotate90C(pieceRotation_clone(piece->rotations[rot + ma]));
-    piece->rotations[rotation_next90C(&rot) + ma] = t;
-    
-    t = pieceRotation_rotate90C(pieceRotation_clone(piece->rotations[rot + ma]));
-    piece->rotations[rotation_next90C(&rot) + ma] = t;
-    
+    for (int i = 0; i < 3; i++) {
+        t = pieceRotation_rotate90C(pieceRotation_clone(piece->rotations[rot + ma]));
+        piece->rotations[rotation_next90C(&rot) + ma] = t;
+    }
     int ma2 = baseRotation->transformation.flip == 1 ? 0 : 4; //anti mirror adjustment;
-    piece->rotations[0 + ma2] = pieceRotation_mirror(pieceRotation_clone(piece->rotations[0 + ma]));
-    piece->rotations[1 + ma2] = pieceRotation_mirror(pieceRotation_clone(piece->rotations[1 + ma]));
-    piece->rotations[2 + ma2] = pieceRotation_mirror(pieceRotation_clone(piece->rotations[2 + ma]));
-    piece->rotations[3 + ma2] = pieceRotation_mirror(pieceRotation_clone(piece->rotations[3 + ma]));
-    
+    for (int i = 0; i <= 3; i++) {
+        piece->rotations[i + ma2] = pieceRotation_mirror(pieceRotation_clone(piece->rotations[i + ma]));
+    }
 }
 
 bool piece_printRUL(Piece *ll, int lli, Piece *lr, int lri, Piece *rl, int rli, Piece *rr, int rri) {
@@ -251,33 +221,6 @@ bool piece_printRUL(Piece *ll, int lli, Piece *lr, int lri, Piece *rl, int rli, 
                rr->textureIID, rr->rotations[rri]->transformation.rotation, rr->rotations[rri]->transformation.flip);
     }
     return true;
-}
-//returns number of ruls printed
-int piece_printRulesOfPieces(Piece *leftPiece, Piece *rightPiece, Piece *rightOverridePiece, bool asciiArt, bool printFailures) {
-    int retval = 0;
-    for (int left = 0; left < (leftPiece->simple ? 4 : 8); left++) {
-        for (int right = 0; right < (rightPiece->simple ? 4 : 8); right++) {
-            if (printFailures) {
-                if (pieceRotation_fitsLeftOfPieceRotation(leftPiece->rotations[left], rightPiece->rotations[right])) {
-                    printf(ANSI_COLOR_GREEN);
-                } else {
-                    printf(ANSI_COLOR_RED);
-                }
-            }
-            if (printFailures || pieceRotation_fitsLeftOfPieceRotation(leftPiece->rotations[left], rightPiece->rotations[right])) {
-                retval++;
-                if (asciiArt) {
-                    piece_printAsciiArtPair(leftPiece, left, rightPiece, right);
-                }
-                printf("\n    ");
-                piece_printRUL(leftPiece, left, rightPiece, right, leftPiece, left, rightOverridePiece, right);
-            }
-            if (printFailures) {
-                printf(ANSI_COLOR_RESET);
-            }
-        }
-    }
-    return retval;
 }
 
 

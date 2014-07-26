@@ -12,6 +12,8 @@ struct NetworkFlags_s {
 NetworkFlags * networkFlags_create(NetworkFlag west, NetworkFlag north, NetworkFlag east, NetworkFlag south);
 void networkFlags_destroy(NetworkFlags *nf);
 void networkFlags_mirror(NetworkFlags *piece);
+void networkFlags_copy(NetworkFlags *dest, NetworkFlags *src);
+NetworkFlags *networkFlags_clone(NetworkFlags *flags);
 void networkFlags_rotate90MC(NetworkFlags *piece);
 void networkFlags_rotate90C(NetworkFlags *piece);
 bool networkFlag_matches(NetworkFlag left, NetworkFlag right, bool zerosCanMatch);

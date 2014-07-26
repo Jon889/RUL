@@ -22,6 +22,7 @@
 0x5dd18b00,N,HSR,1,3,0,0,121,133,0,0,HSR C4
 0x5dd19500,N,HSR,0,0,1,3,0,0,1,133,HSR C5
 
+
 0x5dd2ff00,N,HSR,0,2,0,2,0,143,0,2,Orth switch -1
 0x5dd29700,N,HSR,0,2,0,32,0,143,0,32,Orth switch 1
 0x5dde2d00,N,HSR,0,2,1,32,0,2,121,32,Orth Switch 2
@@ -30,6 +31,8 @@
 0x5dd31a00,N,HSR,0,0,1,23,0,0,151,23,Diag Switch 1
 0x5dd31b00,N,HSR,1,3,0,0,151,163,0,0,Diag switch -1
 0x5dd32500,N,HSR,0,0,1,3,0,0,1,163,Diag switch -2
+
+0x5dd41b00,N,HSR,1,3,0,0,131,163,0,0,C5:DS-1
 
 0x5ddd0200,S,HSR,0,2,0,2,Road,2,0,2,0,OxO Road
 0x5ddd0100,N,HSR,0,2,0,2,Road,0,0,1,3,OxD Road
@@ -89,8 +92,17 @@
 0x5dd19700,N,HSR,0,0,1,3,0,0,1,133,Street,0,2,0,2,C5xO Street
 0x5dd19800,N,HSR,0,0,1,3,0,0,1,133,Rail,0,2,0,2,C5xO Rail
 
+0x5dd29500,N,HSR,0,0,1,3,0,0,131,133,HSR C5:C5
+
 [BasePieces]
 ;For pieces that need to be overridden but are not maxis pieces (e.g. RHW x Monorail, except RHW-2/ANT)
+0x57011920,0x57001920,MonoRail,RHW-3
+0x57021920,0x57001920,MonoRail,MIS
+0x57031920,0x57001920,MonoRail,RHW-4
+0x57041920,0x57001920,MonoRail,RHW-6S
+0x57051920,0x57001920,MonoRail,RHW-8S
+0x57061920,0x57001920,MonoRail,RHW-10S
+
 
 [FlagRemapping]
 ;WNES,WNES=WNES,WNES
@@ -101,3 +113,4 @@
 ;The advantages of this over RUL2 is no need for rotation or flip
 ;and overpasses pieces only need to be declared, and not RULed
 
+0,121,133,0,133,0,0,121=0,121,1133,0,1133,0,0,121
