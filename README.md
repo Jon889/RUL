@@ -2,7 +2,7 @@ RUL
 ===
 
 General format:  
-./RUL <fake ruls> <command>  
+./RUL \<fake ruls\> \<command\>  
 
 eg:  
 ./RUL hsr2.txt ruls  
