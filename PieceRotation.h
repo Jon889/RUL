@@ -1,32 +1,35 @@
 #ifndef PIECEROTATION_H
 #define PIECEROTATION_H
-#include "typedefs.h"
+#include "NetworkFlags.h"
 #include "RUL.h"
 #include <stdlib.h>
 #include <stdbool.h>
 
-struct PieceRotation_s {
+class PieceRotation {
+public:
     NetworkFlags *network1;
     NetworkFlags *network2;
     NetworkFlags *override1;
     Transformation transformation;
+
+    PieceRotation(NetworkFlag west, NetworkFlag north, NetworkFlag east, NetworkFlag south, Rotation rotation, Flip flip);
+    PieceRotation(NetworkFlags nf, Rotation rotation, Flip flip);
+    void addNetwork2(NetworkFlag west, NetworkFlag north, NetworkFlag east, NetworkFlag south);
+    void addNetwork2(NetworkFlags nf);
+    void addOverride1(NetworkFlag west, NetworkFlag north, NetworkFlag east, NetworkFlag south);
+    void addOverride1(NetworkFlags nf);
+    ~PieceRotation();
+    PieceRotation(PieceRotation *);
+
+    //These functions just pass the PieceRotation through for convience.
+    PieceRotation * rotate90C();
+    PieceRotation * rotate90MC();
+    PieceRotation * mirror();
+
+    void print();
+
+    bool fitsLeftOfPieceRotation(PieceRotation *pr2);
+private:
+    bool hasNetwork2();
 };
-
-PieceRotation * pieceRotation_create(NetworkFlag west, NetworkFlag north, NetworkFlag east, NetworkFlag south, Rotation rotation, Flip flip);
-PieceRotation * pieceRotation_create_s(NetworkFlags nf, Rotation rotation, Flip flip);
-void pieceRotation_addNetwork2(PieceRotation *pr, NetworkFlag west, NetworkFlag north, NetworkFlag east, NetworkFlag south);
-void pieceRotation_addNetwork2_s(PieceRotation *pr, NetworkFlags nf);
-void pieceRotation_addOverride1(PieceRotation *pr, NetworkFlag west, NetworkFlag north, NetworkFlag east, NetworkFlag south);
-void pieceRotation_addOverride1_s(PieceRotation *pr, NetworkFlags nf);
-void pieceRotation_destroy(PieceRotation *pr);
-PieceRotation * pieceRotation_clone(PieceRotation *pr);
-
-//These functions just pass the PieceRotation through for convience.
-PieceRotation * pieceRotation_rotate90C(PieceRotation *pr);
-PieceRotation * pieceRotation_rotate90MC(PieceRotation *pr);
-PieceRotation * pieceRotation_mirror(PieceRotation *pr);
-
-void pieceRotation_print(PieceRotation *pr);
-
-bool pieceRotation_fitsLeftOfPieceRotation(PieceRotation *pr, PieceRotation *pr2);
 #endif

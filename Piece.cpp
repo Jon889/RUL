@@ -16,7 +16,8 @@ bool piece_hasCommonNetwork2(char *p1network2Names[10], char *p2network2Names[10
     }
     return false;
 }
-void piece_printAsciiArt(Piece *p, int rotation) {
+void Piece::printAsciiArt(int rotation) {
+    Piece *p = this;
     NetworkFlags *piece = p->rotations[rotation]->network1;
     NetworkFlags *override = p->rotations[rotation]->override1;
     NetworkFlags *n2 = p->rotations[rotation]->network2;
@@ -29,7 +30,8 @@ void piece_printAsciiArt(Piece *p, int rotation) {
 void printTopBottomOfPair(NetworkFlag f1, NetworkFlag f2) {
     printf("   |  %2d%s  |  %2d%s  |", f1, f1 < 100 ? " " : "", f2, f2 < 100 ? " " : "");
 }
-void piece_printAsciiArtPair(Piece *piece, int rotation1, Piece *p2, int rotation2) {
+void Piece::printAsciiArtPair(int rotation1, Piece *p2, int rotation2) {
+    Piece *piece = this;
     NetworkFlags *nf1 = piece->rotations[rotation1]->network1;
     NetworkFlags *nf2 = p2->rotations[rotation2]->network1;
     NetworkFlags *nf12 = piece->rotations[rotation1]->network2;
@@ -115,7 +117,7 @@ bool pieceRotation_matches(PieceRotation *pr, NetworkFlags *flags, NetworkFlags 
         return false;
     }
     //network1/override1 is a match
-    return networkFlags_equal(pr->network2, n2flags);
+    return pr->network2->equal(n2flags);
     
 }
 bool network2NamesCompatible(char *names1[10], char *names2[10]) {
@@ -127,7 +129,7 @@ bool network2NamesCompatible(char *names1[10], char *names2[10]) {
     }
     return strcmp(names1[0], names2[0]) == 0;
 }
-Piece *list_findPieceWithNetworkFlags(List *list, char *n1name, NetworkFlags *n1flags, char *n2names[10], NetworkFlags *n2flags, Rotation *rot) {
+Piece *list_findPieceWithNetworkFlags(List *list, const char *n1name, NetworkFlags *n1flags, char *n2names[10], NetworkFlags *n2flags, Rotation *rot) {
     Piece *piece = NULL;
     Piece *bestPiece = NULL;
     int bestMatchCount = 0;
@@ -153,35 +155,29 @@ Piece *list_findPieceWithNetworkFlags(List *list, char *n1name, NetworkFlags *n1
     return bestPiece;
 }
 
-Piece * piece_createEmpty(void) {
-    return piece_create(0, NULL, false);
-}
-Piece * piece_create(InstanceID tid, char *name, bool simple) {
-    Piece *p = calloc(1, sizeof(Piece));
-    p->textureIID = tid;
-    p->name = name;
-    p->simple = simple;
-    p->network1Name = NULL;
-    return p;
+Piece::Piece(void) : Piece(0, NULL, false) {}
+
+Piece::Piece(InstanceID tid, char *name, bool simple) {
+    textureIID = tid;
+    this->name = name;
+    this->simple = simple;
+    network1Name = NULL;
 }
 
-void piece_destroy(Piece *piece) {
+Piece::~Piece() {
     for (int i = 0; i < 8; i++) {
-        pieceRotation_destroy(piece->rotations[i]);
+        delete this->rotations[i];
     }
-    free(piece);
 }
 
 
 
-Piece *piece_clone(Piece *piece) {
-    Piece *np = piece_create(piece->textureIID,
-                             piece->name,
-                             piece->simple);
+Piece::Piece(Piece *piece) : Piece(piece->textureIID,
+                                   piece->name,
+                                   piece->simple) {
     for (int i = 0; i < 8; i++) {
-        np->rotations[i] = pieceRotation_clone(piece->rotations[i]);
+        this->rotations[i] = new PieceRotation(piece->rotations[i]);
     }
-    return np;
 }
 
 Rotation rotation_next90C(Rotation *rot) {
@@ -193,22 +189,23 @@ Rotation rotation_next90C(Rotation *rot) {
     return *rot;
 }
 
-void piece_fillRotationsFromBase(Piece *piece, PieceRotation *baseRotation) {
+void Piece::fillRotationsFromBase(PieceRotation *baseRotation) {
+    Piece *piece = this;
     Rotation rot = baseRotation->transformation.rotation;
     PieceRotation *t;
     int ma = baseRotation->transformation.flip == 1 ? 4 : 0; //mirror adjustment;
-    piece->rotations[rot + ma] = pieceRotation_clone(baseRotation);
+    piece->rotations[rot + ma] = new PieceRotation(baseRotation);
     for (int i = 0; i < 3; i++) {
-        t = pieceRotation_rotate90C(pieceRotation_clone(piece->rotations[rot + ma]));
+        t = (new PieceRotation(piece->rotations[rot + ma]))->rotate90C();
         piece->rotations[rotation_next90C(&rot) + ma] = t;
     }
     int ma2 = baseRotation->transformation.flip == 1 ? 0 : 4; //anti mirror adjustment;
     for (int i = 0; i <= 3; i++) {
-        piece->rotations[i + ma2] = pieceRotation_mirror(pieceRotation_clone(piece->rotations[i + ma]));
+        piece->rotations[i + ma2] = (new PieceRotation(piece->rotations[i + ma]))->mirror();
     }
 }
 
-bool piece_printRUL(Piece *ll, int lli, Piece *lr, int lri, Piece *rl, int rli, Piece *rr, int rri) {
+bool Piece::printRUL(Piece *ll, int lli, Piece *lr, int lri, Piece *rl, int rli, Piece *rr, int rri) {
     if (ll->textureIID == rl->textureIID && lr->textureIID == rr->textureIID) {
         return false;
     }

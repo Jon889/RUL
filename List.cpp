@@ -13,13 +13,13 @@ struct List_s {
 };
 
 List *list_create(void) {
-    List *list = calloc(1, sizeof(List));
+    List *list = new List();
     list->lastItem = &list->firstItem;
     return list;
 }
 
 void list_addValue(List *list, void *value) {
-    ListItem *newItem = calloc(1, sizeof(ListItem));
+    ListItem *newItem = new ListItem();
     newItem->value = value;
     *list->lastItem = newItem;
     list->lastItem = &newItem->next;
@@ -41,7 +41,7 @@ struct ListIterator_s {
 };
 
 ListIterator * listIterator_create(List *list) {
-    ListIterator *it = calloc(1, sizeof(ListIterator));
+    ListIterator *it = new ListIterator();
     it->list = list;
     it->currentItem = list->firstItem;
     return it;

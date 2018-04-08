@@ -1,7 +1,7 @@
-CC      = gcc
-CFLAGS  = -Wall -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -pedantic 
+CC      = g++
+CXXFLAGS  = -Wall -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c++14 -pedantic
 
-.SUFFIXES: .c .o
+.SUFFIXES: .c .cpp .o
 
 .PHONY: all clean
 

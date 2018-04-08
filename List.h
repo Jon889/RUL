@@ -16,5 +16,5 @@ void * listIterator_next(ListIterator *iterator);
 //listIterator_destroy always returns false so it can be used inline in for loops
 bool listIterator_destroy(ListIterator *iterator);
 //Use in for loops
-#define each_in_list(list, value) ListIterator *it = listIterator_create(list); (value = listIterator_next(it)) != NULL || listIterator_destroy(it); 
+#define each_in_list(list, value) ListIterator *it = listIterator_create(list); (value = (decltype(value))listIterator_next(it)) != NULL || listIterator_destroy(it); 
 #endif
